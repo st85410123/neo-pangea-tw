@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新盤古：假面舞會</title>
+  <meta name="description" content="2026年，聳立於太平洋的海上人工都市「新盤古」。在假面舞會的帷幕下，企業間的殘酷暗鬥與殺手們的血色故事就此展開。">
+
+  <style>
+    :root {
+      /* 新盤古 色彩配置 (賽博龐克/黑色電影風) */
+      --bg: #050608;
+      --bg-panel: rgba(13, 16, 23, 0.85);
+      --neon-cyan: #00f0ff;
+      --neon-pink: #ff003c;
+      --gold-coin: #f5c542;
+      --ink: #e2e8f0;
+      --muted: #8b95a5;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
+      --glow-cyan: 0 0 15px rgba(0, 240, 255, 0.3);
+      --glow-pink: 0 0 15px rgba(255, 0, 60, 0.4);
+      --radius: 16px;
+      --font: "Pretendard", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% -20%, rgba(0, 240, 255, 0.1) 0, transparent 40%),
+                  linear-gradient(180deg, var(--bg) 0%, #0a0d14 50%, var(--bg) 100%);
+      color: var(--ink);
+      font-family: var(--font);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    
+    /* 頂部導航列 */
+    .topbar {
+      position: fixed;
+      top: 18px; left: 50%;
+      transform: translateX(-50%);
+      width: min(1180px, calc(100% - 28px));
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 999px;
+      background: rgba(5, 6, 8, 0.8);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--glow-cyan);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-coin);
+      background: radial-gradient(circle, #ffe173, #b88721);
+      box-shadow: 0 0 10px rgba(245, 197, 66, 0.5);
+    }
+    .brand b { font-size: 15px; color: var(--ink); font-weight: 800; letter-spacing: 0.5px; line-height: 1.2; }
+    .brand span { font-size: 11px; color: var(--neon-cyan); letter-spacing: 1px; display: block; margin-top: 1px; }
+    
+    .nav { display: flex; gap: 8px; }
+    .nav button {
+      border: 0; background: transparent; color: var(--muted);
+      padding: 8px 16px; border-radius: 999px;
+      cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s;
+    }
+    .nav button.active, .nav button:hover {
+      color: #fff;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    /* 主視覺 Hero 區域 */
+    .hero { display: grid; place-items: center; padding: 0 20px 60px; }
+    .hero-inner {
+      width: min(1180px, 100%); display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center;
+    }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 10px;
+      color: var(--neon-cyan); background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.3); padding: 8px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .pulse {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--neon-pink); box-shadow: var(--glow-pink);
+      animation: blink 1.5s infinite alternate;
+    }
+    @keyframes blink { from { opacity: 0.4; } to { opacity: 1; } }
+    
+    h1 { font-size: clamp(40px, 6vw, 84px); line-height: 1.1; letter-spacing: -0.05em; margin-bottom: 24px; font-weight: 900; }
+    h1 span { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink)); -webkit-background-clip: text; color: transparent; }
+    .hero-copy { color: var(--muted); font-size: clamp(15px, 1.5vw, 17px); line-height: 1.7; margin-bottom: 24px; word-break: keep-all; }
+    .cta-text { font-size: 18px; font-weight: 700; color: var(--gold-coin); margin-bottom: 20px; text-shadow: 0 0 10px rgba(245, 197, 66, 0.2); }
+
+    /* 設定資訊方塊 */
+    .info-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 30px; }
+    .info-box { background: rgba(13, 16, 23, 0.5); border: 1px solid rgba(255,255,255,0.03); padding: 16px; border-radius: 8px; }
+    .info-box h4 { font-size: 14px; margin-bottom: 8px; letter-spacing: 0.5px; font-weight: 800; text-transform: uppercase;}
+    .info-box p { font-size: 13.5px; color: #b3bac4; line-height: 1.5; word-break: keep-all; }
+    .info-box.type-masquerade { border-top: 3px solid var(--neon-cyan); background: rgba(0, 240, 255, 0.02); }
+    .info-box.type-masquerade h4 { color: var(--neon-cyan); }
+    .info-box.type-killer { border-top: 3px solid var(--gold-coin); background: rgba(245, 197, 66, 0.02); }
+    .info-box.type-killer h4 { color: var(--gold-coin); }
+    .info-box.type-soldier { border-top: 3px solid var(--neon-pink); background: rgba(255, 0, 60, 0.02); }
+    .info-box.type-soldier h4 { color: var(--neon-pink); }
+    .info-box.type-esper { border-top: 3px solid #a200ff; background: rgba(162, 0, 255, 0.02); }
+    .info-box.type-esper h4 { color: #a200ff; }
+    .info-box.type-currency { grid-column: 1 / -1; border-top: 3px solid var(--gold-coin); background: linear-gradient(90deg, rgba(245, 197, 66, 0.06), rgba(0, 240, 255, 0.02)); }
+    .info-box.type-currency h4 { color: var(--gold-coin); }
+
+    /* 情報監聽動態 */
+    .news-feed { padding: 26px; border-radius: var(--radius); background: #090c12; border: 1px solid rgba(0, 240, 255, 0.15); box-shadow: var(--shadow); position: relative; }
+    .news-feed-header { border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 14px; margin-bottom: 16px; }
+    .news-feed h2 { font-size: 16px; display: flex; justify-content: space-between; align-items: center; color: #fff; font-weight: 800; letter-spacing: 0.5px;}
+    .news-feed h2 small { font-size: 11px; color: var(--neon-cyan); background: rgba(0,240,255,0.08); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.15); font-family: monospace; font-weight: normal;}
+    .terminal-meta { display: flex; justify-content: space-between; font-family: monospace; font-size: 11px; color: var(--muted); margin-top: 6px;}
+    .terminal-meta span b { color: #00ff66; }
+    .feed-list { display: flex; flex-direction: column; gap: 4px; }
+    .feed-item { padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 13.5px; line-height: 1.6; display: flex; flex-direction: column; gap: 4px; position: relative;}
+    .feed-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .feed-meta-row { display: flex; align-items: center; gap: 10px; font-family: monospace;}
+    .feed-time { color: var(--muted); font-size: 12px; }
+    .feed-tag { font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 3px; text-transform: uppercase;}
+    .feed-tag.danger { color: #fff; background: var(--neon-pink); }
+    .feed-tag.intel { color: #000; background: var(--neon-cyan); }
+    .feed-tag.notice { color: #000; background: var(--gold-coin); }
+    .feed-tag.rumor { color: #fff; background: #a200ff; }
+    .feed-text { color: #d1d5db; word-break: keep-all; padding-left: 2px;}
+
+    /* 內容分區 */
+    main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding-bottom: 100px; }
+    .section { display: none; animation: fadeUp 0.4s ease forwards; padding-top: 140px; }
+    .section.active { display: block; }
+    .section-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+    .section-desc { color: var(--muted); margin-bottom: 40px; font-size: 16px; }
+
+    /* 地圖展示框 */
+    .map-container {
+      width: 100%; margin-bottom: 40px; border-radius: var(--radius);
+      border: 1px solid rgba(0, 240, 255, 0.15); box-shadow: var(--shadow); overflow: hidden; background: #090c12;
+    }
+    .map-container img { width: 100%; height: auto; display: block; }
+
+    /* 行政區卡片網格 */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+    
+    .card { background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; transition: 0.3s; }
+    .card h3 { font-size: 22px; color: var(--neon-cyan); margin-bottom: 8px; }
+    .card .subtitle { font-size: 13px; color: var(--gold-coin); margin-bottom: 16px; font-weight: bold; }
+    .card p { font-size: 14px; line-height: 1.6; color: #bbb; }
+
+    .county-card { cursor: pointer; position: relative; }
+    .county-card::after {
+      content: "掃描詳細情報"; position: absolute; right: 20px; bottom: 20px; font-size: 11px;
+      color: var(--neon-cyan); font-family: monospace; opacity: 0; transition: 0.3s;
+    }
+    .county-card:hover { transform: translateY(-5px); border-color: rgba(0,240,255,0.5); box-shadow: var(--glow-cyan); background: rgba(0, 240, 255, 0.05); }
+    .county-card:hover::after { opacity: 1; }
+    
+    /* 彈跳視窗 Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+      z-index: 100; display: none; place-items: center; padding: 20px;
+    }
+    .modal-overlay.active { display: grid; animation: fadeIn 0.3s ease; }
+    .modal-content {
+      background: var(--bg-panel); width: 100%; max-width: 600px;
+      border: 1px solid var(--neon-cyan); border-radius: 16px; padding: 30px;
+      box-shadow: var(--glow-cyan); position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 20px; right: 24px; font-size: 24px; color: var(--muted);
+      cursor: pointer; transition: 0.2s; background: transparent; border: none;
+    }
+    .modal-close:hover { color: var(--neon-pink); }
+    .modal-title { font-size: 28px; color: var(--neon-cyan); font-weight: 900; margin-bottom: 5px; }
+    .modal-subtitle { font-size: 14px; color: var(--gold-coin); margin-bottom: 20px; font-weight: bold; }
+    .modal-desc { font-size: 15px; line-height: 1.6; color: #ccc; margin-bottom: 24px; word-break: keep-all; }
+    
+    .facility-title { font-size: 16px; color: #fff; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;}
+    .facility-list { display: flex; flex-direction: column; gap: 12px; max-height: 40vh; overflow-y: auto; padding-right: 10px; }
+    .facility-list::-webkit-scrollbar { width: 6px; }
+    .facility-list::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.3); border-radius: 4px; }
+    
+    .facility-item h5 { color: var(--neon-cyan); font-size: 14px; margin-bottom: 4px; }
+    .facility-item p { color: #aaa; font-size: 13px; line-height: 1.5; word-break: keep-all;}
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* 組織陣營與人物設定 */
+    .faction-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .faction-btn {
+      border: 1px solid rgba(0, 240, 255, 0.22);
+      background: rgba(13, 16, 23, 0.72);
+      color: var(--muted);
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      transition: 0.25s;
+    }
+    .faction-btn.active,
+    .faction-btn:hover {
+      color: #fff;
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.14);
+      box-shadow: var(--glow-cyan);
+    }
+    .faction-panel {
+      margin-bottom: 28px;
+      padding: 24px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(245, 197, 66, 0.22);
+      background: linear-gradient(135deg, rgba(245, 197, 66, 0.06), rgba(0, 240, 255, 0.03));
+    }
+    .faction-panel h3 {
+      color: var(--gold-coin);
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .faction-panel p {
+      color: #b3bac4;
+      font-size: 14px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+    .character-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .profile-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+      background: var(--bg-panel);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+    }
+    .profile-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-self: start;
+    }
+    .profile-gallery img {
+      width: 100%;
+      aspect-ratio: 1216 / 832;
+      object-fit: contain;
+      max-height: 310px;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 240, 255, 0.18);
+      background: #090c12;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      cursor: zoom-in;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .profile-gallery img:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 240, 255, 0.55);
+      box-shadow: 0 14px 36px rgba(0, 240, 255, 0.16);
+    }
+    .profile-info h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #fff;
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .profile-info .codename {
+      flex: 0 0 auto;
+      font-size: 12px;
+      padding: 4px 10px;
+      color: var(--neon-pink);
+      border: 1px solid rgba(255, 0, 60, 0.75);
+      border-radius: 999px;
+      background: rgba(255, 0, 60, 0.12);
+    }
+    .profile-meta {
+      color: var(--gold-coin);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 14px;
+      margin-bottom: 16px;
+    }
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 12px;
+    }
+    .profile-row b { color: #ddd; }
+    .profile-row span {
+      color: #b8c0cc;
+      text-align: right;
+      word-break: keep-all;
+    }
+    .profile-block {
+      margin-top: 14px;
+    }
+    .profile-block h4 {
+      color: var(--neon-cyan);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .profile-block p {
+      color: #b3bac4;
+      font-size: 13px;
+      line-height: 1.65;
+      word-break: keep-all;
+    }
+    .profile-quote {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--gold-coin);
+      background: rgba(245, 197, 66, 0.05);
+      color: #d9dde5;
+      font-size: 13px;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+    .stat-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .stat-chip {
+      font-size: 11px;
+      padding: 4px 7px;
+      border-radius: 4px;
+      color: #cbd5e1;
+      background: rgba(0, 240, 255, 0.07);
+      border: 1px solid rgba(0, 240, 255, 0.1);
+    }
+    .empty-faction {
+      padding: 26px;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    /* 圖片燈箱 Lightbox */
+    .image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      place-items: center;
+      padding: 28px;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(10px);
+    }
+    .image-lightbox.active {
+      display: grid;
+      animation: fadeIn 0.25s ease;
+    }
+    .lightbox-content {
+      position: relative;
+      width: min(1200px, 100%);
+    }
+    .lightbox-content img {
+      display: block;
+      width: 100%;
+      max-height: 86vh;
+      object-fit: contain;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      background: #050608;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7), var(--glow-cyan);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: -18px;
+      right: -18px;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 240, 255, 0.45);
+      background: rgba(5, 6, 8, 0.92);
+      color: #fff;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: var(--glow-cyan);
+      transition: 0.2s;
+    }
+    .lightbox-close:hover {
+      color: var(--neon-pink);
+      border-color: var(--neon-pink);
+      box-shadow: var(--glow-pink);
+    }
+    .lightbox-caption {
+      margin-top: 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+      word-break: keep-all;
+    }
+
+    /* 響應式佈局 */
+    @media (max-width: 1024px) {
+      .topbar { width: min(100%, calc(100% - 24px)); padding: 12px 16px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 24px; }
+      .news-feed { width: 100%; }
+      .card-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    }
+
+    @media (max-width: 768px) {
+      .topbar {
+        top: 12px; border-radius: 24px; flex-direction: column; align-items: flex-start; gap: 12px; padding: 14px 16px;
+      }
+      .brand { width: 100%; }
+      .brand b { font-size: 14px; }
+      .brand span { font-size: 10px; }
+      .nav {
+        width: 100%; gap: 8px; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; padding-bottom: 2px;
+      }
+      .nav::-webkit-scrollbar { display: none; }
+      .nav button { flex: 0 0 auto; padding: 8px 14px; font-size: 13px; }
+      main { width: calc(100% - 20px); }
+      .hero { padding: 118px 0 40px; }
+      .hero-inner { gap: 20px; }
+      h1 { font-size: clamp(36px, 12vw, 64px); margin-bottom: 18px; }
+      .hero-copy { font-size: 15px; line-height: 1.65; }
+      .cta-text { font-size: 17px; line-height: 1.5; }
+      .info-boxes { grid-template-columns: 1fr; gap: 12px; }
+      .news-feed { padding: 20px; }
+      .news-feed h2 { font-size: 15px; gap: 8px; flex-wrap: wrap; }
+      .terminal-meta { gap: 8px; flex-wrap: wrap; }
+      .feed-item { font-size: 13px; }
+      .feed-meta-row { flex-wrap: wrap; }
+      .section { padding-top: 180px; }
+      .section-title { font-size: 28px; }
+      .section-desc { font-size: 15px; margin-bottom: 28px; }
+      .card-grid { grid-template-columns: 1fr; gap: 16px; }
+      .card { padding: 20px; }
+      .card h3 { font-size: 20px; }
+      .county-card::after { display: none; }
+      .profile-card { padding: 18px; gap: 18px; }
+      .profile-info h3 { flex-direction: column; align-items: flex-start; font-size: 21px; }
+      .profile-grid { grid-template-columns: 1fr; }
+      .faction-selector { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+      .faction-selector::-webkit-scrollbar { display: none; }
+      .faction-btn { flex: 0 0 auto; padding: 9px 14px; font-size: 13px; }
+      .faction-panel { padding: 20px; }
+      .faction-panel h3 { font-size: 21px; }
+      .image-lightbox { padding: 14px; }
+      .lightbox-content img { max-height: 82vh; border-radius: 12px; }
+      .lightbox-close { top: -10px; right: -8px; width: 38px; height: 38px; font-size: 24px; }
+      .lightbox-caption { font-size: 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .topbar { width: calc(100% - 16px); left: 8px; transform: none; padding: 12px 14px; }
+      .hero { padding-top: 126px; }
+      h1 { font-size: clamp(34px, 13vw, 52px); line-height: 1.08; }
+      .profile-gallery { gap: 8px; }
+      .profile-info h3 { font-size: 19px; }
+      .profile-meta, .profile-block p, .profile-quote { font-size: 12.5px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <b>化妝舞會：殺手之城</b><br>
+        <span>NEO PANGEA WORLD</span>
+      </div>
+    </div>
+    <nav class="nav" id="navMenu">
+      <button data-tab="home" class="active">首頁概覽</button>
+      <button data-tab="world">行政區域</button>
+      <button data-tab="people">勢力＆人物</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 首頁概覽 -->
+    <section id="home" class="section active">
+      <div class="hero">
+        <div class="hero-inner">
+          <div>
+            <div class="kicker"><div class="pulse"></div> 聯合網 (UNION NET) 安全連線已建立</div>
+            <h1>沉醉於歡樂與血色的都市，<br><span>新盤古 (Neo Pangea)</span></h1>
+            <p class="hero-copy">
+              矗立於太平洋正中央的巨型海上人工都市。
+              在一般平民眼中，這裡是依靠完美體系與資本運轉的地盤樂園；
+              但在<b>「假面舞會 (Masquerade)」</b>的帷幕背面，各大企業間無情的暗鬥與殺手們浴血撕殺的黑夜正悄然上演。
+            </p>
+            <div class="cta-text">手握殺手硬幣，潛入黑暗的深淵吧。</div>
+            <div class="info-boxes">
+              <div class="info-box type-masquerade">
+                <h4>假面舞會 (Masquerade)</h4>
+                <p>地下世界的最高鐵律。嚴禁殺手們的真實面目以及跨國財閥間的血腥暗鬥暴露在一般民眾面前。</p>
+              </div>
+              <div class="info-box type-killer">
+                <h4>殺手 (Killer)</h4>
+                <p>承接暗殺、諜報等危險地下委託的專家。平時隱藏在「表面身分」之後，透過暗網接案，並以殺手硬幣證明身分。</p>
+              </div>
+              <div class="info-box type-soldier">
+                <h4>新人類士兵 (Neo Soldier)</h4>
+                <p>注射了成功率僅 1% 的極端 DNA 改造劑「強化血清」，突破人體極限的超人。受到絕對保密與嚴格控管。</p>
+              </div>
+              <div class="info-box type-esper">
+                <h4>超能力者 (Esper)</h4>
+                <p>徹底覺醒人類大腦未知領域、能施展超常異能的存在。其身分同樣被嚴密隱匿在假面舞會的帷幕之下。</p>
+              </div>
+              <div class="info-box type-currency">
+                <h4>傑尼 (Jenny)</h4>
+                <p>新盤古都市內流通的官方貨幣單位。基準價值設定等同韓元。</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="news-feed">
+            <div class="news-feed-header">
+              <h2>UNION_NET_LIVE_FEED <small>DECRYPTED</small></h2>
+              <div class="terminal-meta">
+                <span>主機: <b>UNKNOWN</b></span><span>狀態: <b>連線中 (ONLINE)</b></span><span>節點: <b>#0974</b></span>
+              </div>
+            </div>
+            <div class="feed-list">
+              <div class="feed-item">
+                <div class="feed-meta-row"><span class="feed-time">[22:14:05]</span><span class="feed-tag danger">交火</span></div>
+                <p class="feed-text">港口郡「下層甲板」地下黑市爆發激烈槍戰。推測為極道組織「水龍組」企圖劫奪走私貨物。民間區域封鎖啟動。</p>
+              </div>
+              <div class="feed-item">
+                <div class="feed-meta-row"><span class="feed-time">[21:40:59]</span><span class="feed-tag intel">情報</span></div>
+                <p class="feed-text">露米娜郡大型賭場「財富娛樂」VIP 包廂發現高官遭毒殺。手法俐落乾淨，推測為職業殺手所為，賭場安保團隊正封鎖現場滅跡。</p>
+              </div>
+              <div class="feed-item">
+                <div class="feed-meta-row"><span class="feed-time">[20:05:12]</span><span class="feed-tag notice">肅清</span></div>
+                <p class="feed-text">中央郡「皇家宮殿」中立和平樞紐內，一名殺手因擅自執行私人復仇遭到現場擊斃，並自聯合網永久除名。警告：違背和平區規則者，格殺勿論。</p>
+              </div>
+              <div class="feed-item">
+                <div class="feed-meta-row"><span class="feed-time">[19:30:44]</span><span class="feed-tag rumor">危險</span></div>
+                <p class="feed-text">反政府武裝組織「叛亂」首領——代號「六翼天使」已潛入中央郡。CCC 旗下機密特種部隊「虎鯨（新人類士兵）」緊急出擊戒備令已下達。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 行政區域 -->
+    <section id="world" class="section">
+      <h2 class="section-title">行政區域</h2>
+      <p class="section-desc">擁有獨立法規與行政管轄權的海上都市「新盤古」五大郡。<b>點擊下方區域卡片可掃描各區詳細設施情報。</b></p>
+      
+      <div class="map-container">
+        <img src="https://onse.uk/04TMQ/00/Maps.webp" alt="新盤古全景地圖">
+      </div>
+      
+      <div class="card-grid">
+        <div class="card county-card" data-county="central">
+          <h3>中央郡 (Central County)</h3><div class="subtitle">行政與司法的心臟地帶</div>
+          <p>政府大樓、最高法院與欣快花園聚集之地，整潔平靜的表面下，散發著冷酷肅殺的權力氣息。</p>
+        </div>
+        <div class="card county-card" data-county="dockside">
+          <h3>港口郡 (Dockside County)</h3><div class="subtitle">對外大陸的物流門戶</div>
+          <p>粗獷且充滿活力的世界級物流樞紐。走私暗流湧動，各方爭奪地下黑市利益的火拼從未止息。</p>
+        </div>
+        <div class="card county-card" data-county="lumina">
+          <h3>露米娜郡 (Lumina County)</h3><div class="subtitle">沉淪慾望與享樂的歡樂街</div>
+          <p>賭場與大型俱樂部主宰的不夜城。極致奢華的霓虹陰影後，潛伏著絕望陰暗的極貧窟。</p>
+        </div>
+        <div class="card county-card" data-county="nexus">
+          <h3>聯結郡 (Nexus County)</h3><div class="subtitle">商業與金融的樞紐</div>
+          <p>摩天玻璃大廈如林、頂級精品商場聚集，是這座城市最具極致資本主義色彩的高級地段。</p>
+        </div>
+        <div class="card county-card" data-county="innova">
+          <h3>英諾瓦郡 (Innova County)</h3><div class="subtitle">尖端產業與研發特區 (科技谷)</div>
+          <p>理性而冰冷的近未來特區，生技巨頭、生物工程實驗室與巨型中央資料庫均座落於此。</p>
+        </div>
+        <div class="card county-card" data-county="blackdown">
+          <h3>黑降 (Black Down)</h3><div class="subtitle">深海大監獄</div>
+          <p>由 CCC 所設立，專門關押並孤立威脅整個世界觀的最凶惡重罪犯與危險異能者的深海黑牢。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 組織與人物名冊 -->
+    <section id="people" class="section">
+      <h2 class="section-title">組織與人物名冊</h2>
+      <p class="section-desc">穿梭於都市陰影下的主要勢力，以及各勢力所屬的危險人物資料庫。<b>點擊勢力按鈕切換人員名冊。</b></p>
+
+      <div class="faction-selector" id="factionSelector">
+        <button class="faction-btn active" data-faction="independent">自由殺手／無所屬</button>
+        <button class="faction-btn" data-faction="ccc">CCC (中央協調委員會)</button>
+        <button class="faction-btn" data-faction="union">殺手聯盟</button>
+        <button class="faction-btn" data-faction="lotus">黑蓮辛迪加</button>
+        <button class="faction-btn" data-faction="fortuna">財富娛樂</button>
+        <button class="faction-btn" data-faction="chrysalis">克里薩利斯生技</button>
+        <button class="faction-btn" data-faction="blackanchor">黑錨幫</button>
+        <button class="faction-btn" data-faction="suiryu">水龍組</button>
+        <button class="faction-btn" data-faction="rebellion">叛亂</button>
+        <button class="faction-btn" data-faction="euphoria">欣快盟約</button>
+        <button class="faction-btn" data-faction="yoshiwara">新吉原</button>
+      </div>
+
+      <div class="faction-panel">
+        <h3 id="factionTitle">自由殺手／無所屬</h3>
+        <p id="factionDesc">未完全隸屬於特定組織指揮體系的自由傭兵、退役殺手與獨立勢力。他們平時各自隱藏在表面身分之後，透過聯合網接單謀生，或為個人目的遊走於城市的黑暗角落。</p>
+      </div>
+
+      <div class="character-list" id="characterList">
+        <!-- 角色動態生成區域 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- 地區詳細情報 Modal -->
+  <div id="countyModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" id="closeModal">×</button>
+      <h2 class="modal-title" id="mTitle">行政區名稱</h2>
+      <div class="modal-subtitle" id="mSubtitle">定位</div>
+      <p class="modal-desc" id="mDesc">介紹</p>
+      
+      <div class="facility-title" id="mFacilityTitle">核心重要設施</div>
+      <div class="facility-list" id="mFacilities"></div>
+    </div>
+  </div>
+
+  <!-- 圖片放大檢視 Lightbox -->
+  <div id="imageLightbox" class="image-lightbox" aria-hidden="true">
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="closeLightbox" aria-label="關閉放大圖片">×</button>
+      <img id="lightboxImage" src="" alt="放大圖片檢視">
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // 1. 頁籤切換
+      const navButtons = document.querySelectorAll(".nav button");
+      const sections = document.querySelectorAll(".section");
+
+      function activateSmoothTab(tabId) {
+        navButtons.forEach(button => button.classList.toggle("active", button.dataset.tab === tabId));
+        sections.forEach(section => section.classList.toggle("active", section.id === tabId));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      navButtons.forEach(button => {
+        button.addEventListener("click", e => {
+          e.preventDefault();
+          activateSmoothTab(button.dataset.tab);
+        });
+      });
+
+      // 2. 行政區地圖資料庫 (繁中精譯)
+      const countyData = {
+        central: {
+          title: "中央郡 (Central County)", subtitle: "行政與司法的心臟地帶",
+          desc: "摩天政府大樓、最高法院與外國使館林立的權力中樞。全區一塵不染、規劃井然，但在近乎完美的表象之下，瀰漫著冷酷而令人窒息的專制壓迫感。",
+          facilities: [
+            { name: "CCC 政府大樓", desc: "統籌新盤古都市行政、財政預算與治安兵力控制權的巨型黑曜石大樓。" },
+            { name: "皇家宮殿 (和平樞紐)", desc: "外表是風格典雅的酒吧。在店主亞瑟的默許下，地下設有專為殺手提供庇護與後勤的豪華秘密設施。" },
+            { name: "最高法庭 (Grand Court)", desc: "宏偉肅穆的純白大理石巨構建築，象徵全島最高司法機關。" },
+            { name: "欣快花園 (Elysium Garden)", desc: "僅限核心高官與頂層金字塔富豪居住的超豪華封閉式社區。" },
+            { name: "迴廊美術館 (The Cloister)", desc: "格調高雅的藝術館。其地底深處實為殺手聯盟會長奧莉薇亞的秘密總部。" }
+          ]
+        },
+        dockside: {
+          title: "港口郡 (Dockside County)", subtitle: "物流樞紐與對外大陸門戶",
+          desc: "粗獷熱鬧、充滿生氣的區域，也是新盤古對外的唯一實體港口。每到夜晚，走私槍械與毒品的非法黑市極其熱絡。",
+          facilities: [
+            { name: "港口碼頭 (Dockside Port)", desc: "黑手黨「黑錨幫」的地盤。全島所有進口物資、糧食與工業建材均經由這裡上岸。" },
+            { name: "海角先鋒物流中心 (Ocean Vanguard)", desc: "偽裝成跨國航運企業的黑錨幫核心指揮總部。" },
+            { name: "下層甲板 (Under Deck)", desc: "極道「水龍組」掌控的地下巨型黑市。各種無視假面舞會規則的危險違禁品與情報在此流通販售。" },
+            { name: "水龍館", desc: "座落於下層甲板周邊的高檔傳統日式料亭。真面目為水龍組大本營。" },
+            { name: "廢棄墳場碼頭", desc: "因重大塌陷事故而封閉的死港。淪為偷渡、毒品交易與棄屍滅跡的罪惡溫床。" },
+            { name: "空港國際航廈 (Aero Gate)", desc: "新盤古對外的空中航運核心樞紐。" }
+          ]
+        },
+        lumina: {
+          title: "露米娜郡 (Lumina County)", subtitle: "沉淪慾望與享樂的歡樂街",
+          desc: "擠滿觀光客與享樂主義者的不夜之城。但在璀璨霓虹背後，也是地下巨頭們狩獵獵物、暗流湧動的致命獵場。",
+          facilities: [
+            { name: "財富大飯店與渡假村", desc: "由財富娛樂經營、全新盤古規模最大的頂級博弈渡假村。" },
+            { name: "黑蓮俱樂部 (Black Lotus)", desc: "黑蓮辛迪加的總部，同時也是島上名氣最響亮的超巨型夜店。" },
+            { name: "星光大道 (Starlight Avenue)", desc: "名牌精品店與米其林星級餐廳林立的露米娜郡主幹道。" },
+            { name: "霓虹暗影貧民窟 (Neon Shadow Slum)", desc: "緊鄰繁華歡樂街後巷形成的潮濕陰暗貧民窟。殺手隱匿身分的絕佳場所。" }
+          ]
+        },
+        nexus: {
+          title: "聯結郡 (Nexus County)", subtitle: "商業與金融的樞紐",
+          desc: "由摩天玻璃巨廈林立、頂級購物商場組成的極致資本主義核心區。這裡聚集了整座城市最體面的白領階層與高階住宅群。",
+          facilities: [
+            { name: "太平洋資本大樓 (Pacific Capital)", desc: "全島最高聳的金融地標，擁有都市法定貨幣「傑尼」的獨家發行權。" },
+            { name: "王冠大道 (Crown Avenue)", desc: "匯聚世界最頂尖奢華品牌旗艦店的豪華購物林蔭道。" },
+            { name: "黃金方陣 (Golden Grid)", desc: "勞倫斯私下營運的頂層奢華非法地下拍賣會館。" },
+            { name: "避難所密室餐廳 (The Vault)", desc: "標榜軍規防竊聽與極致隱私保密的頂級會員制餐廳。" },
+            { name: "蘭花露臺 (Orchid Terrace)", desc: "提供大企業高管居住、戒備極其森嚴的高科技高級複式別墅區。" },
+            { name: "盤古綜合大學", desc: "負責為這座海上都市培育菁英人才的最高綜合學府。" }
+          ]
+        },
+        innova: {
+          title: "英諾瓦郡 (Innova County)", subtitle: "尖端產業與最高機密研發特區",
+          desc: "工程師與尖端科研學者雲集的冰冷高科技城。全區受到軍規級的嚴密監控，負責進行各種最高機密項目。",
+          facilities: [
+            { name: "克里薩利斯生技總部 (Chrysalis Biotech)", desc: "銀白穹頂造型的巨型建築。地下深處設有非法的超能力覺醒秘密實驗室。" },
+            { name: "赫利俄斯融合爐 (Helios Reactor)", desc: "負責供應全新盤古巨大電力的次世代人造太陽核融合發電核心。" },
+            { name: "歐米茄數據中心 (Omega Data Center)", desc: "保存全島各組織深層隱私與不可告人機密的超大型核心主機庫。" },
+            { name: "革新官邸 (Innovation Residence)", desc: "由 CCC 全額資助、專為保護頂尖核心科研人員所建的要塞級高級住宅。" },
+            { name: "創世紀廣場 (Genesis Plaza)", desc: "科技菁英們日常休閒、安靜且充滿未來感的奢華商務特區。" }
+          ]
+        },
+        blackdown: {
+          title: "黑降 (Black Down)", subtitle: "深海大監獄",
+          desc: "專門關押被 CCC 捕獲、威脅整個世界觀的最凶惡重罪犯與超能力者的海底大牢。在假面舞會帷幕之下，這座黑牢完全與外界光線隔絕，沉浸在深海的死寂中。",
+          facilities: []
+        }
+      };
+
+      // 3. 行政區 Modal 互動
+      const modal = document.getElementById("countyModal");
+      const closeBtn = document.getElementById("closeModal");
+      const countyCards = document.querySelectorAll(".county-card");
+
+      countyCards.forEach(card => {
+        card.addEventListener("click", () => {
+          const id = card.dataset.county;
+          const data = countyData[id];
+          if(!data) return;
+
+          document.getElementById("mTitle").innerText = data.title;
+          document.getElementById("mSubtitle").innerText = data.subtitle;
+          document.getElementById("mDesc").innerText = data.desc;
+          
+          const facilityTitle = document.getElementById("mFacilityTitle");
+          const facilityContainer = document.getElementById("mFacilities");
+          facilityContainer.innerHTML = "";
+          
+          if (data.facilities && data.facilities.length > 0) {
+            facilityTitle.style.display = "block";
+            data.facilities.forEach(fac => {
+              const facHTML = `<div class="facility-item">
+                                 <h5>[ ${fac.name} ]</h5>
+                                 <p>${fac.desc}</p>
+                               </div>`;
+              facilityContainer.insertAdjacentHTML("beforeend", facHTML);
+            });
+          } else {
+            facilityTitle.style.display = "none";
+          }
+          modal.classList.add("active");
+        });
+      });
+
+      // 4. 組織勢力與人物資料庫 (繁中精譯)
+      const factionDatabase = {
+        independent: {
+          title: "自由殺手／無所屬",
+          desc: "未完全隸屬於特定組織指揮體系的自由傭兵、退役殺手與獨立勢力。他們平時各自隱藏在表面身分之後，透過聯合網接單謀生，或為個人目的遊走於城市的黑暗角落。",
+          characters: [
+            {
+              code: "a1", name: "艾蓮娜·哈珀 (Elena Harper)", codename: "劇毒 (Toxin)", age: "29",
+              front: "外科醫師", back: "自由殺手", appearance: "側分銀色長髮，碧綠眼眸",
+              mbti: "INTJ (8w9)", personality: "優雅從容、白天黑夜皆具反差魅力、心思慎密",
+              speech: "溫言細語、充滿挑釁意味", weapon: "手術刀、神經麻痺毒素",
+              feature: "在聯結郡開設「尊享健康外科診所」", body: "172/64/C",
+              outfitFront: "黑色高領毛衣、窄裙、醫師白袍", outfitBack: "黑色晚禮服、吊帶襪、隱匿式槍套",
+              stats: { "力量": 1, "敏捷": 3, "耐力": 1, "武器技術": 4, "格鬥術": 2, "射擊": 3, "智力": 4, "經驗": 3 },
+              background: "童年曾親手為垂死倉鼠動手術救活牠，因而立志成為外科醫生。但面對如機械般日復一日救治病患的生活感到深深倦怠。直到體會到在手術台上握有他人『生殺大權』時，才覺醒真正的嗜虐渴望。白天是受人尊敬的診所院長，夜晚化身為致命的毒殺專家。",
+              combat: "精通各式毒理暗殺，擅長以慢性毒素讓獵物在絕望與痛苦中逐漸窒息死亡。",
+              quote: "看來藥效已經開始發作了呢。那麼晚安囉，不知天高地厚的純情小狗狗。"
+            },
+            {
+              code: "a2", name: "金宥真 (Kim Yu-jin)", codename: "幽靈 (Ghost)", age: "34",
+              front: "超商門市店長", back: "傳奇退役殺手", appearance: "隨意紮起的黑髮、深邃黑眸、明顯的黑眼圈",
+              mbti: "ISTP (9w8)", personality: "極度怕麻煩、生性冷淡無所謂",
+              speech: "語氣冷淡短促、直話直說", weapon: "隨手可得的一切物品（硬幣、原子筆等）",
+              feature: "隱匿身分在港口郡經營「NOW 24」24小時便利超商", body: "168/56/B",
+              outfitFront: "綠色素面T恤、黃色便利超商圍裙制服、寬鬆運動長褲", outfitBack: "俐落合身黑色西裝",
+              stats: { "力量": 4, "敏捷": 4, "耐力": 3, "武器技術": 5, "格鬥術": 5, "射擊": 5, "智力": 3, "經驗": 5 },
+              background: "曾以代號『幽靈』威震暗黑界的活傳奇。服役期間創下委託失敗率 0% 的神話紀錄，但因對殺戮生活產生徹頭徹尾的倦怠與厭煩而決定引退。現在隱身於港口郡開著小超商，享受平凡微小的小確幸生活。",
+              combat: "擅長一擊必殺、精準貫穿人體致命死穴，身邊任何生活小物與周遭環境都能化為致命凶器。",
+              quote: "香菸在後面第二貨架。還有，那邊那個身上滴著血的傢伙，別把老娘的地板弄髒，現在立刻給我爬出去。"
+            },
+            {
+              code: "a3", name: "克洛伊·班恩 (Chloe Vane)", codename: "故障代碼 (Glitch)", age: "23",
+              front: "重度家裡蹲", back: "自由殺手", appearance: "微捲粉紅短髮、黑曜石般大眼",
+              mbti: "ESTP (7w8)", personality: "活潑外向、勝負欲極強、電競宅",
+              speech: "滿嘴電競術語與網路迷因、瘋狂噴垃圾話", weapon: "雙持半自動手槍",
+              feature: "聯結郡高級頂樓公寓屋主", body: "162/52/C",
+              outfitFront: "貓耳耳機、黑色短版露臍上衣、真理褲、寬鬆連帽外套", outfitBack: "機能風露臍連帽上衣、黑色極短牛仔褲、黑夾克",
+              stats: { "力量": 2, "敏捷": 4, "耐力": 3, "武器技術": 2, "格鬥術": 4, "射擊": 5, "智力": 3, "經驗": 2 },
+              background: "白天是窩在聯結郡高級頂樓公寓裡狂打電動的重度家裡蹲。身為全伺服器稱霸的 FPS 頂尖菁英骨灰級玩家，因遊戲課金過度缺錢而開始接殺手任務，意外發現自己在遊戲裡磨練出的神級反應神經與立體空間感知，在現實真槍實彈中更加所向披靡。",
+              combat: "擅長使用雙手手槍施展華麗的槍鬥術（Gun-Kata），局勢越劣勢陷入絕境，專注力與擊殺率越成幾何級數暴增。",
+              quote: "生命值可不能投幣續關喔，真遺憾呢菜鳥——遊戲結束，你 GAME OVER 啦！"
+            },
+            {
+              code: "a4", name: "維拉·索恩 (Vera Thorn)", codename: "豐碑 (Monument)", age: "32",
+              front: "街頭畫家", back: "連續殺人魔", appearance: "微捲黑色長髮、瀏海遮住單眼、血紅眼眸",
+              mbti: "ISTJ (5w4)", personality: "反社會人格障礙、強迫症狂熱",
+              speech: "滿口敬語、充滿哲學思辨與瘋狂藝術論調", weapon: "重型消防斧",
+              feature: "作案現場必用死者鮮血繪製精密幾何圖案", body: "176/61/D",
+              outfitFront: "深褐風衣、毛衣長裙", outfitBack: "深褐風衣、毛衣長裙",
+              stats: { "力量": 4, "敏捷": 1, "耐力": 5, "武器技術": 2, "格鬥術": 1, "射擊": 1, "智力": 2, "經驗": 3 },
+              background: "身世不明的孤兒，天生大腦主管同理心與恐懼的情感中樞徹底缺失。為了證明自己『存在於世的價值』，她決定親手永久撕裂他人生命，以此作為在世界上刻劃暴力傷痕的崇高紀念碑。",
+              combat: "擁有怪物般的超常肉體抗擊打力。面對敵人從不奔跑，而是面無表情地持斧踏步逼近，任何防盜鐵門或掩體都會被她連根砸爛。",
+              quote: "哈哈哈哈！只要你今天在我的斧下化作永恆的休止符，我在這個世界上活過的證明，就將化為不朽的豐碑！"
+            },
+            {
+              code: "a11", name: "凌辰 (Ling Chen)", codename: "玉龍", age: "23",
+              front: "無業遊民", back: "自由傭兵", appearance: "烏黑包包頭、純真碧綠眼瞳",
+              mbti: "ISFJ (2w1)", personality: "忠厚老實、單純耿直、重情重義",
+              speech: "帶著幾分笨拙的豪邁武俠風、習慣用敬語稱呼大俠", weapon: "八極拳、傳統中華武術",
+              feature: "被拍賣行老闆勞倫斯欺騙利用中、嚴重路癡", body: "165/65/D",
+              outfitFront: "粉紅運動內衣、灰色緊身運動褲", outfitBack: "高衩黑色改良旗袍",
+              stats: { "力量": 3, "敏捷": 3, "耐力": 4, "武器技術": 1, "格鬥術": 4, "射擊": 1, "智力": 1, "經驗": 2 },
+              background: "為了阻止走入歧途的弟弟凌蕊而遠渡重洋來到新盤古，不料被黑心仲介詐騙落得身無分文。流落街頭時被勞倫斯假好心收留，自此將勞倫斯視為救命恩人般的『大俠』誓死盡忠，如今淪為替勞倫斯掃除障礙的單純棋子。",
+              combat: "精通八極拳等超近身致命肉搏，寸勁爆發力極具破壞性。",
+              quote: "在下與閣下無冤無仇，但為了報答大俠的大恩大德，今日只得請閣下在此倒下了！"
+            },
+            {
+              code: "a21", name: "艾瑞絲·林 (Iris Lin)", codename: "華彩 (Cadenza)", age: "21",
+              front: "盤古大學大學生", back: "自由狙擊手", appearance: "粉色大波浪長髮、冷艷紫瞳",
+              mbti: "ENTP (3w4)", personality: "嗨咖性格、極度追求生活與工作平衡 (WLB)",
+              speech: "活潑開朗、滿嘴最新流行語與社群用語", weapon: "重型反器材狙擊步槍",
+              feature: "大提琴獨奏家", body: "171/65/D",
+              outfitFront: "短版露臍上衣、工裝寬褲、大學棒球外套、耳罩式耳機", outfitBack: "日常大學服飾搭配黑色老帽、防塵口罩、抗噪耳機",
+              stats: { "力量": 2, "敏捷": 2, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 5, "智力": 2, "经验": 2 },
+              background: "受夠了便利商店的最低基本時薪與奧客刁難，為了尋求能準時下班的短期暴利工作而在暗網接洽殺手聯盟。憑藉身為大提琴演奏家的頂級專注力，以及將目標呼吸與移動軌跡視為樂曲節拍解讀的天賦，首戰便完成不可思議的超長距離狙殺。",
+              combat: "超長程精確狙擊。狙擊時耳機必播放交響樂，跟隨音樂旋律扣下板機是她的絕對儀式。",
+              quote: "風速是行板 (Andante)，目標心跳是快板 (Allegro)... OK，漸強狂熱——命中！收工下班喝珍奶囉！"
+            },
+            {
+              code: "a22", name: "葛蕾絲·米勒 (Grace Miller)", codename: "清道夫 (Sweeper)", age: "34",
+              front: "全職家庭主婦", back: "兼職自由殺手", appearance: "溫柔棕色微捲長髮、柔和棕眸",
+              mbti: "ESFJ (1w2)", personality: "賢慧體貼、富有人情味、母愛氾濫",
+              speech: "溫柔親切、一口充滿主婦氣息的敬語", weapon: "折疊戰術小刀、緊湊型消音袖珍手槍",
+              feature: "家境陷入困難", body: "166/62/E",
+              outfitFront: "白色優雅雪紡襯衫、米色針織開衫與長裙", outfitBack: "全黑消光緊身作戰服",
+              stats: { "力量": 2, "敏捷": 2, "耐力": 3, "武器技術": 4, "格鬥術": 2, "射擊": 4, "智力": 2, "經驗": 3 },
+              background: "曾是令人聞風喪膽的頂級菁英殺手，後來與溫柔老實的上班族丈夫艾薩克墜入愛河，金盆洗手步入婚姻。然而隨著家庭貸款與生活開銷日漸拮据，為了貼補家用，只好瞞著丈夫趁他上班時接案兼差做『大掃除』。",
+              combat: "講求極致的高效乾淨。極度討厭把現場弄髒的血腥肉搏或大規模火拼，擅長無痕俐落暗殺。",
+              quote: "喂～志勳媽媽嗎？是我啦～哎呀不好意思，我現在家裡正在打掃吸地有點吵呢，呵呵呵。"
+            },
+            {
+              code: "a23", name: "梅 (May Lin)", codename: "丐幫幫主 (The Beggar King)", age: "31",
+              front: "落魄流浪漢", back: "地下乞丐之王", appearance: "蓬鬆凌亂的綠色波浪捲髮、混濁灰白的盲眼",
+              mbti: "ESTP (8w7)", personality: "油腔滑調、自信自傲、極度現實拜金",
+              speech: "態度傲慢刻薄、愛開瞎子地獄梗玩笑", weapon: "合金盲人拐杖",
+              feature: "天生雙目失明。統合全島遊民建立情報網「群鼠 (The Rats)」", body: "161/49/B",
+              outfitFront: "報童帽、破爛羊毛圍巾與褪色長風衣、破損百褶裙", outfitBack: "報童帽、破爛羊毛圍巾與褪色長風衣、破損百褶裙",
+              stats: { "力量": 2, "敏捷": 4, "耐力": 3, "武器技術": 5, "格鬥術": 3, "射擊": 1, "智力": 3, "經驗": 4 },
+              background: "一出生就雙目失明被遺棄在底層貧民窟的孤兒。在殘酷街頭求生時，覺醒了超越常人的觸覺與聽覺，能利用空氣震動在腦海建立 3D 空間地圖。如今整合底層流民建立了新盤古最強大的地下情報網『群鼠』。",
+              combat: "聽音辨位、震動感知、精湛盲杖術與極致嘴砲挑釁。先用言語激怒對手失去理智，再讀取重心轉移進行致命反擊。",
+              quote: "哎喲喂呀，我還以為是一群大象朝老娘衝過來呢。重心晃成這樣，你這輩子碰得到我一根頭髮嗎？"
+            },
+            {
+              code: "a25", name: "米婭·羅西 (Mia Rossi)", codename: "超速過載 (Overdrive)", age: "28",
+              front: "閃電特急外送員", back: "自由殺手", appearance: "白金龐克翹短髮、挑染亮粉、粉紅雙眸",
+              mbti: "ESFP (7w8)", personality: "霸氣大姐頭 (Girl Crush)、嚮往極致自由的靈魂",
+              speech: "爽朗直率、油條痞氣、半敬語口吻", weapon: "槓桿式霰彈槍",
+              feature: "重機飆車狂熱者", body: "172/58/D",
+              outfitFront: "亮紅色重機皮衣防摔服", outfitBack: "亮紅色重機皮衣、全罩式賽車安全帽",
+              stats: { "力量": 3, "敏捷": 4, "耐力": 3, "武器技術": 1, "格鬥術": 3, "射擊": 3, "智力": 2, "經驗": 3 },
+              background: "十幾歲時曾是稱霸港口郡的暴走族聯盟領袖，極度庇護後巷的小弟妹。某日水龍組黑道襲擊導致數名部下慘死，暴怒的米婭單槍匹馬殺入敵營擊斃下令的幹部。殺手聯盟賞識她的身手與魄力將其吸收。目前白天擔任標榜『萬物皆可送』的閃電特急重機快遞，夜晚兼職殺手。",
+              combat: "極限重機特技與單手單槓式轉槍上膛 (Spin-cocking) 霰彈槍完美融合的高速機動戰。",
+              quote: "竟敢對老娘罩的小鬼出手...？別妄想今天能活著走出這條街！"
+            },
+            {
+              code: "a26", name: "比安卡·羅素 (Bianca Rosso)", codename: "粗切碎丁 (Concasse)", age: "31",
+              front: "聯結郡頂級牛排館『The Vault』主廚兼老闆", back: "自由殺手", appearance: "火紅俐落長髮紮成短馬尾、冰冷碧綠雙眸",
+              mbti: "ESTJ (1w2)", personality: "料理完美主義者、極度自傲、強勢推土機性格",
+              speech: "滿嘴平語、暴躁神經質、毒舌嚴苛", weapon: "特製中華大菜刀、萬用主廚料理刀",
+              feature: "餐廳嚴重虧損中", body: "170/60/C",
+              outfitFront: "雪白主廚制服與圍裙", outfitBack: "熱烈如火的血紅晚禮服",
+              stats: { "力量": 2, "敏捷": 3, "耐力": 3, "武器技術": 4, "格鬥術": 1, "射擊": 1, "智力": 2, "經驗": 4 },
+              background: "在義大利學廚時捲入黑手黨火拼，情急之下順手抄起兩把菜刀將闖入廚房的暴徒大卸八塊，從此被迫踏入地下世界。為逃離是非遠走新盤古開設奢華餐廳，然而為了追求神級料理採購頂級食材導致負債累累，只好重拾老本行接案賺取食材費。",
+              combat: "以多年精湛刀工為基礎的雙刀暴風驟雨式連擊。一旦開剁，絕不給對手任何喘息反擊的空隙。",
+              quote: "上了老娘砧板的食材，在主廚同意起鍋之前，一塊碎肉都別想逃！"
+            },
+            {
+              code: "a27", name: "艾可·席爾瓦 (Echo Silva)", codename: "寂靜之聲 (Silent)", age: "26",
+              front: "聯結郡『月光圖書館』管理員", back: "自由殺手", appearance: "銀灰與深藍雙色雙馬尾、溫柔棕眸",
+              mbti: "INFP (9w1)", personality: "溫柔善良、富含文學感性、重度失語症",
+              speech: "因失語症僅能透過手語和便利貼紙條溝通、禮貌恭敬", weapon: "爪刀 (Karambit)、加裝消音器手槍",
+              feature: "文學少女、極度疼愛孩童、蝶蛹實驗體逃亡者", body: "163/45/B",
+              outfitFront: "草綠色學院風襯衫、學院風格子裙、綠色貝雷帽", outfitBack: "黑色高領戰鬥緊身衣、防光暗殺斗篷",
+              stats: { "力量": 3, "敏捷": 5, "耐力": 3, "武器技術": 3, "格鬥術": 2, "射擊": 3, "智力": 3, "經驗": 2 },
+              background: "自幼淪為克里薩利斯生技人體實驗室開發血清的活體實驗品，殘酷的活體解剖與試藥摧毀了她的聲帶。在童話書的慰藉下熬過地獄，最終覺醒為能完美操縱『聲音與物理摩擦力』的新人類士兵並成功逃亡。如今白天是溫柔的圖書館員，夜晚則化身獵殺惡棍的死神，誓言不再讓任何無辜孩童受害。",
+              combat: "全都市最頂尖的無聲潛行刺殺。能抹消自身踩踏與移動的一切聲響，逼近瞬間用爪刀無聲抹喉。",
+              quote: "（噓... 圖書館內請保持安靜。）"
+            },
+            {
+              code: "b8", name: "凱爾·布萊克伍德 (Kyle Blackwood)", codename: "暗夜 (Nox)", age: "33",
+              front: "聯結郡『太平洋資本』銀行業務部副理", back: "自由殺手", appearance: "濃重黑眼圈、凌亂黑髮、疲憊黑瞳",
+              mbti: "ISTP (9w8)", personality: "慢性疲勞患者、冷酷商業利益導向、老菸槍",
+              speech: "乾癟冷漠、死氣沉沉的半敬語", weapon: "戰術戰斧 (Tomahawk)、各式軍規火器",
+              feature: "重度成癮老菸槍、每日依賴威士忌度日", body: "184/81",
+              outfitFront: "領帶扯開的皺折黑色上班族西裝", outfitBack: "上班西裝套上戰術武裝帶、手提公事包型軍火庫",
+              stats: { "力量": 3, "敏捷": 2, "耐力": 4, "武器技術": 4, "格鬥術": 3, "射擊": 4, "智力": 2, "經驗": 4 },
+              background: "在虎鯨部隊成立前，曾是專為 CCC 抹除骯髒秘密的王牌特工。多年賣命換來的卻是背叛除名與隊友慘死。心灰意冷洗白身分進入大企業當平凡社畜。如今利用昔日特務身手兼職接案賺外快，夜夜藉著劣質威士忌與濃菸麻痺內心深處的創傷。",
+              combat: "行雲流水的武器無縫切換。戰術戰斧與各類槍枝在極短時間內交互開火劈砍，不給敵手任何招架機會。",
+              quote: "唉... 這可不在今天的工作排程裡啊。很抱歉，接下來的時間算加班，我要收超時費了。"
+            },
+            {
+              code: "a28", name: "薇薇安·勒布朗 (Vivian LeBlanc)", codename: "裁縫師 (Tailor)", age: "27",
+              front: "聯結郡高級訂製禮服店『Maison LeBlanc』店主兼首席設計師", back: "自由殺手", appearance: "橘色雙螺旋鑽頭捲髮、高傲澄澈藍眸",
+              mbti: "ENFJ (3w4)", personality: "唯美主義狂熱者、戲劇化自戀人格",
+              speech: "高貴的大小姐腔調、一口尊貴敬語", weapon: "特製精鋼巨型裁縫剪刀",
+              feature: "頸部永遠配戴父母遺留的湛藍寶石項鍊", body: "169/57/D",
+              outfitFront: "純白奢華洛麗塔蕾絲洋裝", outfitBack: "復古酒紅色奢華天鵝絨晚禮服",
+              stats: { "力量": 1, "敏捷": 2, "耐力": 1, "武器技術": 5, "格鬥術": 1, "射擊": 1, "智力": 1, "經驗": 2 },
+              background: "出身名門裁縫世家。少女時期親眼目睹新興黑幫老大因嫌棄父母訂製的西裝版型不合身，當場殘虐殺害雙親，因而罹患創傷後戲劇化人格。成年後繼承家業並親手血刃仇人。如今是名震新盤古上流階層的最強服裝設計巨匠。",
+              combat: "毫無誤差的精準裁切。巨型特製裁縫剪在她手中猶如活物，精準咬合剪斷對手關節骨骼、防具接縫與動脈。",
+              quote: "時尚的精髓在於恰到好處的減法。您這條多餘卑賤的性命，就由本小姐替您優雅地剪裁掉吧。"
+            },
+            {
+              code: "a29", name: "泰莎·林奇 (Tessa Lynch)", codename: "引擎過熱 (Overheat)", age: "26",
+              front: "港口郡『下層甲板』地下黑市非法軍火商「關鍵兵工廠」老闆娘", back: "兼職測試殺手", appearance: "雜亂翹馬尾、亮橘色長髮、琥珀眼眸",
+              mbti: "ENTP (7w6)", personality: "精明生意人、走火入魔的重度武器宅、瘋狂技師",
+              speech: "語速極快的高亢聒噪口吻、習慣講平語", weapon: "親手爆改的多管試作型重武裝",
+              feature: "無所不改的槍械狂人", body: "166/53/C",
+              outfitFront: "黑色小背心、機工吊帶牛仔褲、防風護目鏡", outfitBack: "黑色小背心、機工吊帶牛仔褲、防風護目鏡",
+              stats: { "力量": 3, "敏捷": 1, "耐力": 3, "武器技術": 2, "格鬥術": 1, "射擊": 3, "智力": 4, "經驗": 1 },
+              background: "原本是知名大軍火企業的明星研發員，因不滿公司道德法規與安全限制無法將武器殺傷力推至極限，直接捲走大批珍貴原型零件深夜跳槽。在地下黑市自立門戶，專門兜售致命魔改兵器，同時親自當殺手實測新玩具的威力。",
+              combat: "毫無規律可循的非對稱重火力狂轟。武器五花八門，但由於全屬實驗原型機，戰鬥中隨時有自爆過熱的危險。",
+              quote: "咦？等等！暫停！暫停一下！這把槍怎麼現在就突破臨界溫度了啦？！喂那邊的別愣著，快臥倒啊！"
+            },
+            {
+              code: "a30", name: "魯比·克羅斯 (Ruby Cross)", codename: "女妖 (Banshee)", age: "24",
+              front: "雙人地下搖滾樂團「Dead Decibel」主唱", back: "自由殺手搭檔", appearance: "天藍色龐克狼尾短髮、野性金瞳",
+              mbti: "ISFP (4w3)", personality: "叛逆不羈、純粹的搖滾死硬派精神、憤世嫉俗",
+              speech: "冷嘲熱諷、吊兒郎當的粗魯說話風格", weapon: "雙持微型衝鋒手槍",
+              feature: "與拉碧絲為長期生死搭檔", body: "168/52/C",
+              outfitFront: "黑色破損緊身牛仔褲、撕裂重金屬T恤、漁網絲襪", outfitBack: "龐克皮夾克、緊身皮褲",
+              stats: { "力量": 1, "敏捷": 3, "耐力": 2, "武器技術": 1, "格鬥術": 2, "射擊": 3, "智力": 1, "經驗": 2 },
+              background: "生長於霓虹暗影貧民窟，對腐敗的新盤古體制充滿憤怒，歌聲是她宣洩狂怒的唯一手段。因歌詞過度直白反叛遭到主流俱樂部全面封殺。直到遇見吉他手拉碧絲組成樂團，白天流浪街頭開唱，夜晚則化身殺手拍檔洗劫各方黑錢。",
+              combat: "身處後方以衝鋒槍彈幕提供密集的火力壓制。把交火當作現場搖滾演唱會，隨著槍聲節奏肆意宣洩彈雨。",
+              quote: "哈！剛才那段副歌超帶感吧？果然現場還是要飄點血腥味，才稱得上真正的 Rock'n'Roll 啊！"
+            },
+            {
+              code: "b9", name: "拉碧絲 (Lapis Lazuli)", codename: "強打者 (Hitter)", age: "25",
+              front: "雙人地下搖滾樂團「Dead Decibel」吉他手", back: "自由殺手搭檔", appearance: "微捲俐落暗紅短髮、深沉黑眸",
+              mbti: "ISFJ (8w9)", personality: "冷酷少言、內斂沉穩、護花使者",
+              speech: "字句短促冰冷的男性平語", weapon: "實心加重精鋼球棒",
+              feature: "魯比的第一號死忠狂熱粉絲兼專屬保鑣", body: "182/91",
+              outfitFront: "黑色無袖背心、寬鬆工裝垮褲", outfitBack: "黑色硬派皮衣、皮褲",
+              stats: { "力量": 4, "敏捷": 1, "耐力": 3, "武器技術": 2, "格鬥術": 3, "射擊": 1, "智力": 2, "經驗": 3 },
+              background: "曾是在貧民窟地下黑拳賽場與後巷打滾的硬派打手。曾是默默蹲在路邊聽魯比唱歌並偷偷學吉他的頭號粉絲。某天街頭混混找魯比麻煩，拉碧絲持球棒將整群流氓打成殘廢，兩人從此結下不解之緣並搭檔至今。",
+              combat: "雖然動作不快，但每一擊都灌注全身重量與驚人蠻力。在前線以精鋼球棒粉碎一切阻礙，為身後的魯比爭取傾瀉火力的完美空間。",
+              quote: "...魯比，妳節奏抓太快了。換彈匣的時間我會幫妳扛下來，先把呼吸調勻。"
+            },
+            {
+              code: "a32", name: "史嘉蕾·羅伯森 (Scarlet Robertson)", codename: "指揮家 (Maestro)", age: "30",
+              front: "無", back: "黑降重刑犯", appearance: "高馬尾金髮、狂熱緋紅雙瞳",
+              mbti: "INTJ (5w4)", personality: "優雅從容的極致瘋子、爆炸美學至上狂信徒",
+              speech: "高貴典雅、充滿哲學詩意的敬語", weapon: "智能引爆戒指、多重高爆合成炸藥",
+              feature: "引爆動作為標誌性的『優雅響指』", body: "174/68/D",
+              outfitFront: "純白紳士三件式西裝、白手套、白色絲巾", outfitBack: "純白紳士三件式西裝、白手套、白色絲巾",
+              stats: { "力量": 1, "敏捷": 2, "耐力": 2, "武器技術": 1, "格鬥術": 2, "射擊": 1, "智力": 4, "經驗": 4 },
+              background: "曾是備受矚目的天才化學與建築工程學者，卻徹底沉醉於火藥爆炸瞬間產生的純粹毀滅能量與巨響美感中。轉行當殺手後，比起暗殺目標本身，她更執著於如何將目標所在的整棟建築以最優美的幾何比例徹底炸成齪粉。曾為殺一人夷平整棟摩天樓，後遭虎鯨部隊逮捕關入深海黑牢。",
+              combat: "戰前精心計算爆破點，伴隨敵人的步伐優雅彈指，將戰場化為壯麗的交響樂火海地獄。",
+              quote: "這片刻多麼寧靜祥和啊。但您知道嗎？在極致寂靜後綻放的那聲巨響，其淨化心靈的宣洩感...才是世間最美的藝術。"
+            },
+            {
+              code: "a33", name: "白妍 (Baek Yeon)", codename: "殘月 (Waning Moon)", age: "28",
+              front: "無", back: "黑降重刑犯", appearance: "垂在胸前的黑色長辮、盲目白瞳",
+              mbti: "INFJ (1w2)", personality: "慈悲為懷、甘願自我犧牲的俠者",
+              speech: "平靜優雅、古風古韻的沉穩敬語", weapon: "傳統長環刀",
+              feature: "極度厭惡 CCC 虛偽體制、呼吸器官嚴重衰竭竭盡", body: "168/49/B",
+              outfitFront: "竹編斗笠、黑色改良式傳統韓服", outfitBack: "竹編斗笠、黑色改良式傳統韓服",
+              stats: { "力量": 1, "敏捷": 5, "耐力": "0", "武器技術": "5+@", "格鬥術": 1, "射擊": 1, "智力": 3, "經驗": 4 },
+              background: "曾是專門獵殺惡官黑幫的俠盜殺手。某次某化學企業偷偷在貧民區排放致命神經毒氣，白妍為救孩童徒手衝入毒氣室，導致肺部徹底壞死。震怒的她單刀殺入該企業董事會將所有人斬首，隨後被捕關入黑降。如今她在深海牢獄中忍受窒息痛苦，靜靜等待燃燒殘命推翻 CCC 的復仇之日。",
+              combat: "神速無雙的一閃拔刀術。但由於肺部徹底壞死，極限爆發狀態僅能支撐數秒。",
+              quote: "咳...咳咳... 這條路的盡頭唯有墳場。若尚惜性命，請速速回頭吧。"
+            },
+            {
+              code: "a42", name: "萊莉·佩奇 (Riley Page)", codename: "無", age: "26",
+              front: "獨立調查記者", back: "無", appearance: "酒紅色中長髮束起、熱情酒紅眼眸",
+              mbti: "ENFP (7w6)", personality: "樂觀陽光、滿腔熱血、偶爾冒失脫線",
+              speech: "無拘無束、親暱的平語口吻、緊張時會胡言亂語", weapon: "隨身相機、錄音筆",
+              feature: "島上極少數察覺到『假面舞會』真正存在的民間人士", body: "166/54/C",
+              outfitFront: "白色毛衣、褐色皮外套、合身牛仔褲", outfitBack: "白色毛衣、褐色皮外套、合身牛仔褲",
+              stats: { "力量": 1, "敏捷": 3, "耐力": 2, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 4, "經驗": 2 },
+              background: "原本是主流大報社的明日之星，因企圖追查各大財閥違法黑幕與殺手都市傳說而觸怒高層遭到開除封殺。目前化身自由獨立記者，透過個人自媒體『萊莉時報』爆料社會黑暗面，雖然常被大眾當成八卦陰謀論。她毕生的夢想就是徹底撕破覆蓋整座都市的假面舞會謊言。",
+              combat: "完全沒有任何肉搏戰鬥力，但逃跑速度堪稱一絕。常因搶獨家新聞身陷絕境，狀況不對拔腿就跑。",
+              quote: "哎呀！噓！噓！後輩君小聲點！我、我這是為了引開敵人注意才採取的超高級戰術... 哇啊啊！追上來了！快溜啊！！"
+            },
+            {
+              code: "a43", name: "潔西·范倫泰 (Jessie Valentine)", codename: "頭獎 (Jackpot)", age: "36",
+              front: "露米娜郡破舊徵信社「幸運一擊偵探社 (Lucky Strike)」社長", back: "超能力徵信專家", appearance: "隨意紮起的灰白長髮、歷經風霜的棕褐色眼眸",
+              mbti: "INTP (9w8)", personality: "懶散怠惰、遊手好閒、關鍵時刻神情凌厲",
+              speech: "拖著長音、充滿倦怠感、油條且精明", weapon: "肉搏體術、隨身環境道具",
+              feature: "接觸感應超能力者（Psychometry，能讀取物品與現場記憶）", body: "171/58/C",
+              outfitFront: "黑色運動內衣、磨損棕色長皮大衣、皮褲、皮手套", outfitBack: "黑色運動內衣、磨損棕色長皮大衣、皮褲、皮手套",
+              stats: { "力量": 4, "敏捷": 4, "耐力": 4, "武器技術": 4, "格鬥術": 5, "射擊": 3, "智力": 5, "經驗": 5 },
+              background: "曾是名震新盤古的名牌私家偵探，但多次歷經千辛萬苦抓到兇手，公權力卻收受賄賂轉身將罪犯無罪釋放。心灰意冷下體悟到『伸張正義不如自己親自動手揍人領酬勞』，索性開了地下萬事屋徵信社。雖然收入頗豐，但每天都把錢拿到賭場揮霍一空。",
+              combat: "神乎其技的街頭隨機應變格鬥。平常看似極度厭戰，一旦動起真格，能將周遭一切物理環境與雜物轉化為高智商戰術武器。",
+              quote: "歡迎光臨～先說好，要是定金給得不夠塞牙縫，這家黑心徵信社連一根手指頭都懶得為你動喔。"
+            },
+            {
+              code: "a44", name: "莉塔·潘妮 (Rita Penny)", codename: "無", age: "20",
+              front: "徵信社工讀生兼大掌櫃", back: "無", appearance: "亮粉色短髮紮成小蘋果頭、粉紅大眼",
+              mbti: "ESTJ (1w2)", personality: "精打細算、愛碎碎念但非常可靠可愛的管家婆",
+              speech: "機關槍般連珠炮式的碎念敬語", weapon: "高壓防狼電擊棒、電擊槍",
+              feature: "潔西最得力的助手兼徵信社實質當家者", body: "163/47/B",
+              outfitFront: "黑色寬鬆連帽上衣、下衣失蹤風短褲、厚底短靴", outfitBack: "黑色寬鬆連帽上衣、下衣失蹤風短褲、厚底短靴",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 3, "智力": 3, "經驗": 2 },
+              background: "出身貧民窟，雙親早逝留下一屁股高利貸，差點被地下錢莊賣掉。千鈞一髮之際，接獲委託的潔西單槍匹馬將討債黑幫打得落花流水並當場燒毀借據救了她。為了報恩主動上門，卻發現救命恩人竟是個在垃圾堆辦公室吃披薩睡懶覺的廢柴，看不下去的莉塔自告奮勇擔任助手，如今沒了她這家店一天都開不下去。",
+              combat: "主要負責輔助與干擾。利用電擊槍阻斷敵人攻勢，為潔西創造一擊必殺的絕佳空檔。",
+              quote: "社～～長～～！！你是不是又把我藏在花盆底下的私房緊急備用金偷拿去賭場輪盤輸光了啊？！"
+            }
+          ]
+        },
+        ccc: {
+          title: "CCC (中央協調委員會)",
+          desc: "新盤古的中央政府兼合法最高統治機構。在「假面舞會」被嚴格遵守的前提下，默許企業與黑幫間的地下暗鬥以避免全面戰爭爆發；旗下設有機密特殊部隊「虎鯨 (Orca)」，專門平定重大恐怖攻擊與失控異能事件。",
+          characters: [
+            {
+              code: "a24", name: "艾蓮諾·白朗 (Eleanor Blanc)", codename: "無", age: "32",
+              front: "CCC 現任總理", back: "新盤古最高統治者", appearance: "白金波浪捲髮、冰冷澄澈藍瞳",
+              mbti: "ENTJ (1w9)", personality: "大義滅親、絕對冷酷理性、極端秩序主義",
+              speech: "對外展現親民溫和敬語／私底下言詞如寒冬般刺骨", weapon: "權力與絕對指揮權",
+              body: "168/55/C", outfitFront: "純白將官軍服、白色船形帽", outfitBack: "純白將官軍服、白色船形帽",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 3, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 4, "經驗": 4 },
+              background: "一路走菁英路線破格以極輕年紀登上 CCC 最高總理大位。在公眾媒體前是以掃蕩犯罪為己任的鐵腕溫柔領袖，但私下卻深刻明白唯有黑幫與殺手維持適度的恐懼平衡，平民才會心甘情願服從 CCC 的強權監控統治。只要不違反假面舞會，她會暗中默許地下罪惡存在，並以極端冷血手段剷除危害統治的一切異端。",
+              combat: "本人無戰鬥能力，但擁有調動整座都市正規軍與虎鯨特種部隊的無上權限。"
+            },
+            {
+              code: "a15", name: "黛安娜·凡斯 (Diana Vance)", codename: "女武神 (Valkyrie)", age: "39",
+              front: "虎鯨 (Orca) 部隊長兼副司令", back: "無", appearance: "紫紅俐落盤髮、血紅威嚴眼眸",
+              mbti: "ESTJ (1w9)", personality: "冷靜沉著、愛碎碎念的鐵血教官",
+              speech: "條理分明、威嚴果決", weapon: "軍刀、精準射手步槍 (DMR)",
+              body: "174/60/C", outfitFront: "黑色高級將官軍常服、大盤帽", outfitBack: "黑色高級將官軍常服、大盤帽",
+              stats: { "力量": 4, "敏捷": 5, "耐力": 4, "武器技術": 4, "格鬥術": 3, "射擊": 3, "智力": 4, "經驗": 4 },
+              background: "原 CCC 情報局王牌特務，曾因滲透大企業洗錢據點失風受瀕死重傷。在即將被當作廢件報廢前自願接受強化血清改造，突破神經反應極限成為虎鯨副司令。擔任整支部隊的作戰大腦，每天為了處理傑克森等人出擊後捅出的天文數字賠償帳單與悔過書而飽受偏頭痛折磨。",
+              combat: "利用空間推進的三維立體作戰專家。雖然經常痛罵傑克森，但戰場上比任何人都信賴他的破壞力並能完美指揮其協同打擊。"
+            },
+            {
+              code: "b6", name: "傑克森·寇爾 (Jackson Cole)", codename: "阿特拉斯 (Atlas)", age: "33",
+              front: "虎鯨 (Orca) 部隊突擊隊員", back: "無", appearance: "古銅色肌膚、黑髮髒辮、金黃野獸瞳孔",
+              mbti: "ESTP (8w7)", personality: "豪邁奔放、狂熱好戰分子、純爺們硬漢",
+              speech: "活力過剩、粗獷平語", weapon: "雙持雙聯重型格林機槍",
+              body: "198/135", outfitFront: "赤裸精壯上身、防彈戰術背心、巨型重武裝彈鏈帶", outfitBack: "赤裸精壯上身、防彈戰術背心、巨型重武裝彈鏈帶",
+              stats: { "力量": 5, "敏捷": 4, "耐力": 4, "武器技術": 2, "格鬥術": 3, "射擊": 3, "智力": 1, "經驗": 3 },
+              background: "曾是新盤古底層巡邏警員，在黑幫大規模街頭交火時為掩護平民撤退被掃成蜂窩。垂死之際被送入蝶蛹的血清實驗室，他在細胞撕裂劇痛中狂笑著挺了過來，成為第一號成功受體。現在是虎鯨部隊最鋒利的開路攻城槌。",
+              combat: "推土機式的狂暴彈幕衝鋒。雙手各提一挺重型格林機槍橫掃千軍，享受以絕對暴力將惡煞轟成肉泥的純粹快感。"
+            },
+            {
+              code: "a37", name: "摩根·卡特 (Morgan Carter)", codename: "無", age: "38",
+              front: "警察廳重大犯罪搜查科隊長", back: "無", appearance: "黑色俐落短馬尾、深邃黑眸",
+              mbti: "ESTJ (1w2)", personality: "死腦筋一根筋、燃燒著不妥協的正義感、刀子嘴豆腐心",
+              speech: "粗魯暴躁、冷嘲熱諷、習慣稱呼平語", weapon: "警用柔道投擲、.45 ACP 柯爾特半自動手槍",
+              body: "170/63/D", outfitFront: "白色素T、深黑皮夾克、行動西裝褲", outfitBack: "白色素T、深黑皮夾克、行動西裝褲",
+              stats: { "力量": 3, "敏捷": 3, "耐力": 4, "武器技術": 3, "格鬥術": 4, "射擊": 3, "智力": 3, "經驗": 4 },
+              background: "破案率最高、同時因違規被拔官降職最多次的警界異類。昔日調查連續殺人魔時摯友搭檔遇害，當她好不容易揪出黑蓮辛迪加的鐵證時，高層卻因 CCC 施壓強行壓下此案。自此認清新盤古的和平全是一場虛偽謊言。目前遊走於體制邊緣，與黑市線人交易，誓言親手將殺手與黑道繩之以法。極度憎惡殺手聯盟。",
+              combat: "毫不留情的街頭肉搏與柔道摔技，搭配貼身近距離 .45 壓制開火。",
+              quote: "開什麼玩笑？！受害者的腦袋都被割下來了，高層居然叫我用『瓦斯氣爆』結案？！就是因為你們這群滿嘴體制大局的混蛋，我的下屬才會一個個死無全屍！"
+            },
+            {
+              code: "a38", name: "西爾維亞·亞克萊特 (Sylvia Arkwright)", codename: "海市蜃樓 (Mirage)", age: "35",
+              front: "CCC 總理首席特助", back: "總理直屬影子特務", appearance: "黑色三七分俐落短馬尾、冰冷碧藍眸",
+              mbti: "ISTJ (6w5)", personality: "絕對忠誠、冷酷無情、行事縝密",
+              speech: "嚴謹公事公辦的冷漠敬語", weapon: "特工專用暗殺短刃、微聲消音手槍",
+              body: "167/52/C", outfitFront: "金絲眼鏡、精緻女式合身西裝", outfitBack: "金絲眼鏡、深紅高衩露背毛衣洋裝",
+              stats: { "力量": 2, "敏捷": 4, "耐力": 3, "武器技術": 5, "格鬥術": 4, "射擊": 4, "智力": 4, "經驗": 5 },
+              background: "出身最高情治單位的王牌間諜。深受艾蓮諾甘願背負一切罪孽建立新秩序的遠大理念吸引，自願抹消所有戶籍檔案成為其私人獵犬。白天打理總理的一切政務行程，夜晚則在陰影中為總理抹殺政治對手與潛在威脅。",
+              combat: "融入日常環境的無痕暗殺。利用特工刀與消音武器，在目標毫無警戒的情況下瞬間摘取其性命。",
+              quote: "非常抱歉，先生。從這裡開始是平民管制區，請您在此止步... 永遠。"
+            },
+            {
+              code: "a39", name: "維羅妮卡·克勞馥 (Veronica Crawford)", codename: "無", age: "34",
+              front: "黑降典獄長", back: "無", appearance: "金色大波浪長髮、冷艷紫眸",
+              mbti: "ENTJ (8w7)", personality: "重度施虐狂 (Sadist)、極度傲慢、強烈支配慾",
+              speech: "極度侮辱貶低、典型女王調教口吻", weapon: "高壓放電重型皮鞭",
+              body: "176/65/E", outfitFront: "緊身露臍軍裝短T、皮質超短熱褲、軍官大衣披肩、大盤帽", outfitBack: "緊身露臍軍裝短T、皮質超短熱褲、軍官大衣披肩、大盤帽",
+              stats: { "力量": 2, "敏捷": 3, "耐力": 3, "武器技術": 4, "格鬥術": 3, "射擊": 1, "智力": 2, "經驗": 3 },
+              background: "曾是 CCC 秘密審訊官，因審訊過程中過度追求虐待快感導致嫌犯致死率過高，被明升暗降流放至深海黑牢擔任典獄長。在這裡她是至高無上的女王，每天挑選最狂傲危險的囚犯施加精神調教與酷刑，從中獲取變態快感。",
+              combat: "揮灑自如的高壓電擊鞭控場。專門以劇烈神經劇痛與羞辱擊潰對方的戰意與自尊。",
+              quote: "你在外面多威風跟我一點關係都沒有，小渣滓。既然進了我的籠子... 你就只是一條隨時得舔我鞋跟的下賤家畜罷了。聽懂了嗎？"
+            },
+            {
+              code: "b12", name: "理查·凡斯 (Richard Vance)", codename: "無", age: "58",
+              front: "警察廳長", back: "無", appearance: "花白平頭短髮、滄桑灰瞳、整齊白鬍子",
+              mbti: "INTJ (1w9)", personality: "威嚴權威、向殘酷現實妥協、飽經風霜的看破與厭世",
+              speech: "具壓迫感的中低音、毫無多餘情緒波動、一針見血", weapon: "老舊轉輪手槍",
+              body: "180/75", outfitFront: "警察廳長一級將官禮服", outfitBack: "警察廳長一級將官禮服",
+              stats: { "力量": 2, "敏捷": 1, "耐力": 3, "武器技術": 2, "格鬥術": 2, "射擊": 3, "智力": 4, "經驗": 5 },
+              background: "年輕時也曾是滿腔熱血的重案刑警。曾抓到蝶蛹生體實驗罪證向上呈報，卻遭勾結的高層全面壓制，妻子與摯友更慘遭黑幫暗殺滅口。深刻明白純粹的理想無法撼動權力金字塔後，他選擇染黑雙手踏上權力巔峰成為廳長。雖然表面對摩根的越界調查極其嚴厲，但內心深處卻默默祈禱她別步上自己當年的毀滅覆轍。",
+              combat: "擅長大局權衡與壓制事態擴大。非必要絕不拔槍，僅在關鍵時刻以老舊左輪精準終結混亂。",
+              quote: "這座城市總是不缺自以為能拯救世界的蠢蛋。他們殊不知，所謂的代價，往往要用身邊至親的鮮血來支付。"
+            }
+          ]
+        },
+        union: {
+          title: "殺手聯盟 (Killer Union)",
+          desc: "負責媒合自由殺手委託、維持地下暗殺秩序，並對違反假面舞會規則的叛徒執行絕對死刑的地下執法巨頭。旗下設有極秘處刑部隊「裁決者 (Execute)」——專門獵殺違規殺手的死神部隊。",
+          characters: [
+            {
+              code: "a9", name: "奧莉薇亞·霍桑 (Olivia Hawthorne)", codename: "策展人 (Curator)", age: "45",
+              front: "中央郡「迴廊美術館」館長", back: "殺手聯盟最高理事長", appearance: "橘色長髮紮成優雅側馬尾、沉著金瞳",
+              mbti: "INFJ (1w9)", personality: "表面天然呆冒失／幕後深謀遠慮、極度冷酷理性",
+              speech: "表面溫柔恭敬極致敬語／暗中冰冷平語威嚴", weapon: "定制消音手槍",
+              body: "175/61/D", outfitFront: "米色大衣、端莊西裝、圓框眼鏡、和藹親切", outfitBack: "脫下眼鏡、放下長髮、眼神凌厲冰冷",
+              stats: { "力量": 1, "敏捷": 2, "耐力": 2, "武器技術": 3, "格鬥術": 1, "射擊": 3, "智力": 5, "經驗": 5 },
+              background: "平時是常在美術館走廊摔破花瓶的天然呆館長，但真實身分是親手將『假面舞會』鐵律烙印在新盤古地下社會每一吋土地、引領殺手聯盟走向全盛期的幕後黑手。她從不干涉個別殺手的委託道德與金錢糾紛，但只要有人膽敢踐踏假面舞會的帷幕，必將招致她毫無留情的雷霆肅清。",
+              combat: "頂級心理戰與大局操盤佈局。以超越常人的算計與情報網，在敵人尚未觸及自己前就已被層層棋子徹底抹殺。"
+            },
+            {
+              code: "a10", name: "夏綠蒂·貝爾 (Charlotte Vale)", codename: "蜘蛛 (Arachne)", age: "26",
+              front: "館長私人秘書", back: "殺手聯盟會長專屬代言人", appearance: "整齊黑短髮後束微辮、毫無雜質的純白雙眸",
+              mbti: "ISTJ (6w5)", personality: "絕對忠誠、冷漠無情、如人偶般沉靜",
+              speech: "冰冷禮貌的公務敬語", weapon: "特製高分子切斷鋼絲",
+              body: "166/51/B", outfitFront: "白色端莊襯衫、米色及膝裙", outfitBack: "哥德式戰鬥女僕裝",
+              stats: { "力量": 4, "敏捷": 4, "耐力": 3, "武器技術": 5, "格鬥術": 4, "射擊": 1, "智力": 2, "經驗": 3 },
+              background: "幼年在新盤古最深處的貧民窟為了搶食奪命而殘虐求生，身心靈幾乎被暴力與飢餓抹滅人性。瀕死時被奧莉薇亞收養，賜予了她夏綠蒂的名字與立足於世的尊嚴。全聯盟唯一見過奧莉薇亞真面目並能與之平起平坐的親信。",
+              combat: "隱形鋼絲結界與無聲空間切割。交火瞬間能無聲封鎖全場走道，將企圖靠近會長的刺客碎屍萬段。"
+            },
+            {
+              code: "b3", name: "勞倫斯·貝克 (Lawrence Beck)", codename: "瑪門 (Mammon)", age: "52",
+              front: "聯結郡「黃金方陣」非法拍賣會總裁", back: "殺手聯盟第二把交椅", appearance: "身形臃腫肥胖、頭頂禿髮、油膩金髮藍瞳",
+              mbti: "ESTJ (8w7)", personality: "貪婪拜金、專橫跋扈、權力慾薰心",
+              speech: "傲慢無禮、老油條官僚口吻", weapon: "拐杖劍、.50 鍍金沙漠之鷹",
+              feature: "暗中覬覦會長之位、叛亂背後的最大黑金金主", body: "175/105",
+              outfitFront: "極致奢華訂製金線西裝、復古紳士圓頂硬禮帽", outfitBack: "極致奢華訂製金線西裝、復古紳士圓頂硬禮帽",
+              stats: { "力量": 3, "敏捷": 1, "耐力": 1, "武器技術": 3, "格鬥術": 2, "射擊": 2, "智力": 2, "經驗": 4 },
+              background: "二十多歲時也曾是聯盟叱吒風雲的傳奇殺手，一路爬到第二把交椅。然而長年退居幕後沉浸在金錢與權力春夢中徹底腐化。他認為奧莉薇亞恪守假面舞會是阻礙大賺橫財的絆腳石，私下資助反抗軍，企圖掀起全島動亂奪取都市控制權。",
+              combat: "金錢收買與傭兵人海戰術。因嚴重發福且疏於鍛鍊，自身實戰水準連年輕全盛時期的三成都不到。"
+            },
+            {
+              code: "b4", name: "亞瑟·海斯 (Arthur Hayes)", codename: "調酒師 (Master)", age: "65",
+              front: "皇家宮殿酒吧老闆兼首席調酒師", back: "和平樞紐總管大師", appearance: "健碩非裔長者、精修短白髮、花白鬍鬚",
+              mbti: "ENFJ (9w8)", personality: "溫文儒雅、海納百川的包容力、不怒自威的隱士霸氣",
+              speech: "低沉溫暖、極富磁性的優雅敬語", weapon: "一雙歷經萬戰的赤手空拳",
+              feature: "絕不介入外部鬥爭、深不可測的傳奇強者", body: "192/108",
+              outfitFront: "經典黑白英式調酒師正裝", outfitBack: "經典黑白英式調酒師正裝",
+              stats: { "力量": 5, "敏捷": 5, "耐力": 5, "武器技術": 5, "格鬥術": 5, "射擊": 5, "智力": 3, "經驗": 5 },
+              background: "其過去履歷被列為極度機密，本人面對好奇的殺手總是哈哈大笑說『只是年輕時多吃了兩碗飯、多做了幾下伏地挺身而已』。不接任何懸賞委託，全心坐鎮在和平樞紐酒吧吧檯前，親自以硬幣審核進入避難地下室的客人。",
+              combat: "絕對武力碾壓的中裁者。僅在有人膽敢無視和平規則在店內拔刀開槍時親自出手，只需單手就能將失控的狂暴殺手瞬間制服。"
+            },
+            {
+              code: "a12", name: "瑪雅·海斯 (Maya Hayes)", codename: "小雀 (Little Bird)", age: "20",
+              front: "盤古大學英美文學系大學生", back: "和平樞紐服務生", appearance: "雙編深藍麻花辮、清澈棕色眼瞳",
+              mbti: "ESFP (7w6)", personality: "元氣滿滿、大方討喜、擁有見慣大場面的強心臟",
+              speech: "俏皮活潑、帶點撒嬌的半敬語", weapon: "無",
+              feature: "亞瑟的寶貝孫女", body: "164/57/C",
+              outfitFront: "亮橘色休閒針織衫、牛仔短褲", outfitBack: "端莊優雅的復古酒吧侍女制服",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 1, "經驗": 3 },
+              background: "嬰兒時期雙親遇害，被亞瑟親手撫養長大。對她而言，各路血淋淋的殺手不過是常常給她大筆小費的奇怪叔叔阿姨。現在是和平樞紐地下庇護所的實質大管家，負責引導殺手更換裝備、醫療與食宿打點。",
+              combat: "召喚祖父。自身毫無武力，但只要有人在吧檯惹事，按下一鍵呼叫器亞瑟便會如天神降臨。"
+            },
+            {
+              code: "a34", name: "雷恩 (Rain)", codename: "雨雲 (Nimbus)", age: "29",
+              front: "無", back: "裁決者 (Execute) 處刑官", appearance: "凌亂墨綠長髮、死寂黑瞳、深黑眼圈",
+              mbti: "INFP (4w5)", personality: "憂鬱空虛、極端虛無主義者",
+              speech: "有氣無力的低沉微弱敬語", weapon: "奈米碳纖防彈鋼傘、加裝消音器手槍",
+              body: "172/65/D", outfitFront: "深藍防雨風衣、暗殺緊身衣", outfitBack: "深藍防雨風衣、暗殺緊身衣",
+              stats: { "力量": 4, "敏捷": 4, "耐力": 3, "武器技術": 5, "格鬥術": 3, "射擊": 3, "智力": 3, "經驗": 4 },
+              background: "曾為撫養弟妹而賣命的平凡殺手。某次黑幫挾持其家人，狂暴的雷恩在光天化日之下血洗黑幫違反假面舞會。遭裁決者圍剿生擒後，聯盟給她一個殘酷交換條件：親手處決家人以贖罪，換取加入裁決者保住一命。自此陷入永恆虛無，深知掙扎規則毫無意義，麻木執行一切處決任務。",
+              combat: "全距離全能戰士。特製防彈傘面能抵擋重火器近攻，傘尖與中柱暗藏利刃與消音手槍。",
+              quote: "臨死前垂死掙扎的哀號聲... 實在太吵了。"
+            },
+            {
+              code: "a35", name: "尼亞 (Nia)", codename: "野貓 (Neko)", age: "31",
+              front: "無", back: "裁決者 (Execute) 處刑官", appearance: "俏麗紫髮紮成雙馬尾辮、狡黠血紅雙眸",
+              mbti: "ENTP (7w8)", personality: "小惡魔雌小鬼性格、殘虐嗜血、古靈精怪",
+              speech: "賤兮兮的嘲諷挑釁、滿是撒嬌裝可愛的惡毒平語", weapon: "合金強化指甲、野貓近戰體術",
+              body: "161/43/B", outfitFront: "黑粉配色哥德蘿莉塔洋裝、貓耳髮箍", outfitBack: "黑粉配色哥德蘿莉塔洋裝、貓耳髮箍",
+              stats: { "力量": 3, "敏捷": 5, "耐力": 4, "武器技術": 1, "格鬥術": 5, "射擊": 1, "智力": 4, "經驗": 4 },
+              background: "從小在底層靠討好大人、再趁其不備落井下石敲骨吸髓維生。某次得罪了違反舞會逃亡的重裝殺手，竟利用地形將對方生生玩死。被聯盟挖掘進入裁決者部隊，以虐殺自命不凡的資深叛徒為人生最大樂趣。",
+              combat: "宛如野貓般詭譎靈動的敏捷身法與致命毒舌挑釁。藉由嘲弄使對手理智斷線，再以合金利爪撕裂喉管。",
+              quote: "欸～～？才這種程度就敢違反舞會規則呀？長得跟座山一樣壯，結果根本是個超～級～雜～魚♡"
+            },
+            {
+              code: "a36", name: "珍·朵 (Jane Doe)", codename: "正午對決 (High Noon)", age: "36",
+              front: "無", back: "裁決者 (Execute) 處刑官", appearance: "大波浪金長髮、銳利澄金眼眸",
+              mbti: "ISTJ (8w9)", personality: "行我素的大姐頭、酷嬌帥氣",
+              speech: "沉著從容、充滿西部牛仔感的冷諷平語", weapon: "特製大口徑重型單動轉輪手槍",
+              body: "174/62/C", outfitFront: "牛仔帽、防風防塵長風衣、戰術襯衫、工裝長褲", outfitBack: "牛仔帽、防風防塵長風衣、戰術襯衫、工裝長褲",
+              stats: { "力量": 2, "敏捷": 5, "耐力": 2, "武器技術": 2, "格鬥術": 3, "射擊": "5+@", "智力": 2, "經驗": 5 },
+              background: "曾是名震暗黑界的速射神槍手。曾因誤殺而觸犯舞會，在被追捕過程中擊斃一名裁決者成員。力竭被捕後，聯盟以填補陣亡名額為條件赦免其罪名。如今成為沒有過去名號的肅清獵犬，極度熱衷於將狂妄後輩的眉心轟開窟窿。",
+              combat: "極致的拔槍速射與擊錘連發 (Fanning)。不屑搞卑鄙偷襲，專精於堂堂正正正面對決拔槍一擊分生死。",
+              quote: "喂，菜鳥。既然敢打破舞會的規矩，就該明白催命帳單遲早會寄到你頭上。"
+            },
+            {
+              code: "b11", name: "雅各 (Jacob)", codename: "開膛手 (Slasher)", age: "50",
+              front: "無", back: "裁決者 (Execute) 處刑官", appearance: "大背頭白金短髮、毫無生氣的深黑死魚眼",
+              mbti: "ISTJ (8w9)", personality: "純粹的殺人機械、僅遵從規則與命令行動",
+              speech: "極少開口、回答僅限一到兩個字的冷酷單音", weapon: "重型砍刀 (Machete)",
+              body: "198/115", outfitFront: "厚重防刺防割作戰夾克、磨損破爛工作長褲", outfitBack: "厚重防刺防割作戰夾克、磨損破爛工作長褲",
+              stats: { "力量": 5, "敏捷": 2, "耐力": 5, "武器技術": 3, "格鬥術": 3, "射擊": 1, "智力": 1, "經驗": 5 },
+              background: "所有過去皆被徹底抹煞的謎之巨漢。自前任理事長時期就已存在的元老級行刑工具。他是聯盟陰影中最鋒利的冷血屠刀，也是維持這座都市暗黑秩序最無情的看門惡犬。",
+              combat: "怪物般的純粹肉體抗打力與蠻力。無視常人攻擊硬頂而上，以重型開山刀無情正面將獵物劈成兩半。",
+              quote: "違反... 規則。處決。"
+            }
+          ]
+        },
+        lotus: {
+          title: "黑蓮辛迪加 (Lotus Syndicate)",
+          desc: "盤踞於露米娜郡的黑幫集團。以超大夜店「黑蓮俱樂部」為核心巢穴，藉由高檔新型毒品流通、夜店娛樂與 VIP 秘密派對掌控城市的黑暗欲望與政商洗錢管道。",
+          characters: [
+            {
+              code: "b1", name: "維克多·李 (Victor Lee)", codename: "V.I.P", age: "35",
+              front: "黑蓮俱樂部總經理", back: "黑蓮辛迪加幕後龍頭", appearance: "油亮後梳大背頭黑髮、狡猾棕褐雙眼",
+              mbti: "ENTJ (3w4)", personality: "陰險狡詐、智謀過人、極度傲慢",
+              speech: "居高臨下、字字戳人心窩的挖苦嘲弄", weapon: "微型德林格雙管手槍",
+              body: "175/70", outfitFront: "高級絲綢襯衫、天鵝絨名牌西裝外套、百達翡麗名錶", outfitBack: "高級絲綢襯衫、天鵝絨名牌西裝外套、百達翡麗名錶",
+              stats: { "力量": 1, "敏捷": 2, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 4, "經驗": 2 },
+              background: "從底層夜店公關起家，深諳操控人性墮落才是最暴利產業。憑藉過人智商與拿捏權貴黑料，創立黑蓮辛迪加並建立夜店帝國。如今藉由高級毒品與私密性派對，將新盤古大批政商名流玩弄於股掌之間。",
+              combat: "全靠智商設局。本人絕不下場搏命，擅長利用經濟、心理與社會性陷阱置人於死地。"
+            },
+            {
+              code: "a5", name: "瓦列莉亞·沃爾科娃 (Valeriya Volkova)", codename: "白獵犬 (White Hound)", age: "28",
+              front: "黑蓮俱樂部安保總監", back: "維克多專屬首席保鑣", appearance: "俐落金髮短馬尾、冰冷如雪的碧藍眼眸",
+              mbti: "ISTJ (6w5)", personality: "寡言冷酷、辦事俐落不留情面",
+              speech: "毫無起伏的冰冷乾音、極短單字回答", weapon: "西斯特瑪俄羅斯防身術 (Systema)、自動手槍、戰術格鬥直刀",
+              body: "174/66/C", outfitFront: "深黑俐落特勤西裝、維安專用無線耳麥", outfitBack: "深黑俐落特勤西裝、維安專用無線耳麥",
+              stats: { "力量": 3, "敏捷": 3, "耐力": 4, "武器技術": 3, "格鬥術": 4, "射擊": 3, "智力": 2, "經驗": 3 },
+              background: "曾為俄羅斯特種部隊精銳特工，因遭上層出賣導致全小隊覆沒。自此厭惡崇高口號，被維克多以天文數字重金聘用。統籌黑蓮全場安保，是寸步不離維克多身側的無敵物理盾牌。",
+              combat: "高效率防禦反擊與俄式特種格鬥術。雖然內心鄙視維克多的卑劣人品，但受雇於人必將以命捍衛契約到底。"
+            },
+            {
+              code: "a6", name: "艾莉亞·史特林 (Aria Sterling)", codename: "無", age: "21",
+              front: "獨立創作歌手夢想家", back: "黑蓮俱樂部簽約駐唱歌手", appearance: "金色長髮漸層櫻花粉、純潔粉紅瞳孔",
+              mbti: "ENFP (3w2)", personality: "開朗純真、熱愛音樂、情感豐沛",
+              speech: "溫柔親切的敬語、反應豐富生動", weapon: "無",
+              body: "163/56/D", outfitFront: "針織柔軟毛衣、俏皮熱褲、米色針織開衫", outfitBack: "銀白亮片絲綢細肩帶晚禮服",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 2, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 1, "經驗": 1 },
+              background: "懷抱歌手夢想的單純女孩。在無數次試鏡碰壁後，在街頭彈唱時被維克多發掘簽下。完全不知曉新盤古暗黑界的血腥殺戮，只把維克多當作嘴硬心軟的恩人老闆，把瓦列莉亞當作可靠帥氣的保鑣大姐姐。",
+              combat: "戰鬥力為零。每晚用清澈如天籟的嗓音在黑蓮主舞台撫慰沉溺於酒精與藥物中的靈魂。"
+            }
+          ]
+        },
+        fortuna: {
+          title: "財富娛樂 (Fortuna Entertainment)",
+          desc: "坐落於露米娜郡的巨型博弈勢力。以「財富娛樂大飯店與渡假村」為核心基地，壟斷新盤古的合法賭博、VIP 高級接待與洗錢賭金特權。",
+          characters: [
+            {
+              code: "a7", name: "伊莎貝拉·羅西 (Isabella Rossi)", codename: "輪盤夫人 (Madame Roulette)", age: "42",
+              front: "財富娛樂董事長兼總裁", back: "無", appearance: "大波浪黑長捲髮、極具侵略性的祖母綠雙眸",
+              mbti: "ENTJ (8w7)", personality: "野心勃勃的蛇蠍美人 (Femme Fatale)",
+              speech: "溫言軟語、從容不迫、暗藏殺機", weapon: "精鋼鋒利鐵摺扇",
+              feature: "極度奢華性感", body: "172/65/F",
+              outfitFront: "火紅開衩晚禮服、優雅寬簷名媛帽、奢華貂皮披肩", outfitBack: "火紅開衩晚禮服、優雅寬簷名媛帽、奢華貂皮披肩",
+              stats: { "力量": 1, "敏捷": 2, "耐力": 1, "武器技術": 3, "格鬥術": 1, "射擊": 1, "智力": 3, "經驗": 4 },
+              background: "從廉價地下黑賭場荷官爬起，在將前任會長與老臣一一送上『不幸意外』的靈車後，將財富娛樂徹底據為己有。極度瞧不起黑蓮的維克多，將其視為只會賣毒的低俗暴發戶，野心是併吞全露米娜郡的夜間帝國。",
+              combat: "利用極致魅惑與言語陷阱實施暗殺。趁獵物沉醉於她的裙底風光時，以暗藏鋒利刀刃的特製鋼扇割斷其咽喉。"
+            },
+            {
+              code: "a8", name: "席琳·露姬 (Celine Rouge)", codename: "黑桃 (Spade)", age: "24",
+              front: "財富娛樂王牌荷官", back: "伊莎貝拉專屬執行殺手", appearance: "清秀中長白髮、神秘高貴紫瞳",
+              mbti: "ENTP (7w8)", personality: "玩世不恭、精打細算、賭性堅強",
+              speech: "油滑輕浮、一口看似客氣的敬語", weapon: "特製高硬度邊緣開鋒撲克牌",
+              body: "168/59/C", outfitFront: "財富娛樂高級荷官制服 (黑襯衫、洋紅背心、黑長褲、領結)", outfitBack: "荷官制服加上黑色呢帽、優雅燕尾風衣",
+              stats: { "力量": 2, "敏捷": 4, "耐力": 2, "武器技術": 4, "格鬥術": 2, "射擊": 1, "智力": 3, "經驗": 3 },
+              background: "自幼在港口郡黑市靠扒竊與快手騙術長大的孤兒。因在財富娛樂賭場出千被伊莎貝拉抓包，伊莎貝拉欣賞她的驚人眼力與膽識將其收為義女與貼身殺手，現為賭場台柱荷官兼頭牌刺客。",
+              combat: "利用強烈自轉射出軌跡不可預測的精鋼撲克牌，猶如狂風般切裂人體要害。"
+            },
+            {
+              code: "b2", name: "池賢宇 (Ji Hyun-woo)", codename: "無", age: "25",
+              front: "財富娛樂賭場保全人員", back: "無", appearance: "凌亂棕色短髮、溫和琥珀色雙眼",
+              mbti: "ISFJ (2w1)", personality: "忠厚老實、純情大男孩、富正義感",
+              speech: "老實客氣的敬語、一緊張就結巴", weapon: "壯碩體魄肉搏",
+              feature: "單戀荷官席琳", body: "188/85",
+              outfitFront: "黑色標準保全西裝", outfitBack: "黑色標準保全西裝",
+              stats: { "力量": 2, "敏捷": 1, "耐力": 3, "武器技術": 1, "格鬥術": 2, "射擊": 1, "智力": 1, "經驗": 1 },
+              background: "韓國鄉村長大的青年，懷抱著賺錢回鄉買房成家的夢想來到新盤古。靠著高大結實的身材應徵上賭場警衛，上班第一天便對荷官席琳一見鍾情。完全不知這座賭場背後的血雨腥風，每日傻傻守護著席琳。",
+              combat: "充當人肉盾牌。雖然從未受過殺人訓練，但抗擊打肉體與保護席琳的頑強意志遠超一般常人。"
+            }
+          ]
+        },
+        chrysalis: {
+          title: "克里薩利斯生技 (Chrysalis Biotech)",
+          desc: "總部設立於英諾瓦郡的頂尖生醫跨國企業。負責生產強化血清獨家供應 CCC 部隊，總部地底深處則祕密進行極端非法的超能力強制覺醒活體實驗。",
+          characters: [
+            {
+              code: "a13", name: "伊芙琳·克羅夫特 (Evelyn Croft)", codename: "無", age: "39",
+              front: "克里薩利斯生技總裁兼首席研發官", back: "無", appearance: "高貴紫髮盤髻、單眼被斜瀏海遮掩、冰冷金瞳",
+              mbti: "INTJ (5w4)", personality: "絕對理性、病態的學術傲慢、視人命為數據",
+              speech: "充滿學術理論的名詞、冷酷優雅的敬語", weapon: "尖端生化科技",
+              body: "170/65/D", outfitFront: "深V黑色無袖針織衫、白色及膝窄裙、白大褂風衣", outfitBack: "深V黑色無袖針織衫、白色及膝窄裙、白大褂風衣",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": "5+@", "經驗": 2 },
+              background: "親手開發出強化血清並設計了全島動力來源『赫利俄斯融合爐』的當代第一天才。曾親眼目睹襲擊總部的超能力者瑟拉菲娜，從此瘋狂著迷於異能。爬上總裁之位後，秘密綁架流民與孤兒展開殘暴的超能力人體覺醒實驗。",
+              combat: "自身無任何肉搏戰力，常時由兩名實驗成功體——烈火里奧與冰霜格拉西亞寸步不離守護。"
+            },
+            {
+              code: "b5", name: "里奧 (Leo)", codename: "伊芙利特 (Ifrit)", age: "21",
+              front: "伊芙琳貼身近衛", back: "超能力覺醒實驗 1號成功體", appearance: "黑紅雙色狂野短髮、赤紅兇瞳、雙臂布滿火灼烙痕",
+              mbti: "ISFP (6w7)", personality: "叛逆火爆、重度妹控、困獸般的凶暴",
+              speech: "暴躁粗魯、髒話連篇、滿口平語", weapon: "超高溫自體發火異能",
+              feature: "格拉西亞為其親妹妹", body: "182/78",
+              outfitFront: "黑紅配色特製超能力阻抗拘束戰鬥服", outfitBack: "黑紅配色特製超能力阻抗拘束戰鬥服",
+              stats: { "力量": 3, "敏捷": 2, "耐力": 3, "武器技術": 1, "格鬥術": 3, "射擊": 1, "智力": 1, "經驗": 3 },
+              background: "在露米娜貧民窟與妹妹格拉西亞相依為命的流浪兒，被人口販子綁架賣給蝶蛹當白老鼠。在無數同伴慘死的血腥地獄中，僅憑保護妹妹的唯一本能覺醒了操縱超高溫烈焰的異能。為獲取抑制妹妹細胞壞死的解藥與受制於頸部項圈，不得不充當仇人伊芙琳的走狗。",
+              combat: "野獸般的超近距離烈焰爆破衝擊，不拘泥於招式，以驚人的熱量與輸出正面焚毀敵人。"
+            },
+            {
+              code: "a14", name: "格拉西亞 (Glacia)", codename: "冰霜 (Frost)", age: "20",
+              front: "伊芙琳貼身近衛", back: "超能力覺醒實驗 2號成功體 (缺陷殘次品)", appearance: "銀白與幽藍相間的飄逸長髮、遮眼瀏海、柔弱天藍瞳孔",
+              mbti: "INFP (9w1)", personality: "體弱多病、溫順柔弱、渴望寧靜",
+              speech: "輕聲細語、帶著顫抖的怯弱敬語", weapon: "極低溫極冰異能",
+              feature: "里奧為其親哥哥", body: "162/49/A",
+              outfitFront: "藍黑配色特製超能力抗性連身拘束服", outfitBack: "藍黑配色特製超能力抗性連身拘束服",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 3, "經驗": 1 },
+              background: "里奧的親妹妹。實驗中為阻止哥哥暴走的烈火將他活活燒死，在極度悲鳴中覺醒了操縱極寒冰霜的能力。但由於異能覺醒不完全，每週若未按時注射伊芙琳特製的細胞中和劑，體內水分便會瞬間結凍導致全身細胞壞死崩潰。",
+              combat: "大範圍極速凍結與厚重冰壁防禦。比起殺敵，更加專精於絕對防禦與控場支援。"
+            }
+          ]
+        },
+        blackanchor: {
+          title: "黑錨幫 (Black Anchor)",
+          desc: "盤踞於港口郡與碼頭的傳統黑手黨。以「海角先鋒物流中心」為掩護基地，掌控除毒品之外的一切海上走私、碼頭貨運與黑市物流，秉持老派家族兄弟道義。",
+          characters: [
+            {
+              code: "a16", name: "瓦倫蒂娜·柯里昂 (Valentina Corleone)", codename: "教母 (Godmother)", age: "52",
+              front: "海角先鋒物流董事長", back: "黑錨幫最高掌舵人", appearance: "側分大波浪艷紅捲髮、威嚴蒼藍眼眸",
+              mbti: "ENFJ (8w9)", personality: "家族至上、恪守江湖道義與浪漫主義的鐵腕大姐",
+              speech: "從容大氣、親切如長輩，動怒時散發如北極凍原般的駭人殺氣", weapon: "截短雙管獵槍",
+              body: "176/78/E", outfitFront: "義大利深灰條紋三件式西裝", outfitBack: "條紋西裝外披名貴雪白皮草大衣、手持頂級雪茄",
+              stats: { "力量": 3, "敏捷": 2, "耐力": 2, "武器技術": 3, "格鬥術": 3, "射擊": 3, "智力": 4, "經驗": 5 },
+              background: "新盤古開港初期，在混亂殘酷的碼頭組織自衛義勇隊起家的傳奇女梟雄。將手下成員皆視為血脈相連的家人，最高原則是讓家族成員吃飽穿暖，並立下嚴規『毒品絕不可流入碼頭』，為此與專營毒品走私的日本極道水龍組爆發無數次血雨腥風的浴血火拼。",
+              combat: "歷經無數次生死血戰磨練出的老練殺氣。在槍林彈雨中沉著避開要害逼近敵人，零距離轟碎獵物胸膛。"
+            },
+            {
+              code: "a17", name: "羅莎·馬羅尼 (Rosa Maroni)", codename: "爆竹 (Firecracker)", age: "25",
+              front: "物流碼頭現場調度領班", back: "黑錨幫首席突擊隊長", appearance: "彩虹挑染粉雙馬尾、亮粉色大眼睛",
+              mbti: "ESTP (7w8)", personality: "人來瘋嗨咖、單純少根筋、極度扣扳機狂熱 (Trigger Happy)",
+              speech: "大嗓門高分貝、動不動滿嘴粗話三字經", weapon: "重型防暴鐵撬、微型衝鋒槍",
+              body: "155/48/B", outfitFront: "黑色小背心、oversized 飛行夾克、熱褲", outfitBack: "黑色小背心、皮短褲、隨意披在肩上的條紋襯衫",
+              stats: { "力量": 3, "敏捷": 3, "耐力": 4, "武器技術": 2, "格鬥術": 2, "射擊": 3, "智力": 1, "經驗": 3 },
+              background: "港口流浪兒出身，因偷麵包差點被其他黑幫混混打死之際被瓦倫蒂娜救下。自此將瓦倫蒂娜視為再生母親。每次幫派開戰永遠是第一個手持衝鋒槍瘋狂狂笑著衝入敵陣的無畏先鋒，親切稱呼瓦倫蒂娜為『媽媽 (Mama)』。",
+              combat: "瘋狂彈幕壓制與前鋒防線撕裂。開火時嘴巴一秒都不停歇，比起潛行更熱愛正面硬幹狂歡。"
+            }
+          ]
+        },
+        suiryu: {
+          title: "水龍組 (Suiryu-gumi)",
+          desc: "盤踞於港口郡地下「下層甲板」黑市的日本極道黑幫。以高檔料亭「水龍館」為本營，掌控毒品走私與地下走私通路，長年與黑錨幫爭奪港口霸權。",
+          characters: [
+            {
+              code: "b7", name: "黑田柳根 (Kuroda Ryugen)", codename: "劍聖 (Kensei)", age: "72",
+              front: "高檔傳統日式料亭「水龍館」總支配人", back: "極道水龍組初代組長", appearance: "向後挽起的灰白長髮、歷經無數斬首的森冷黑瞳",
+              mbti: "ISTP (8w9)", personality: "殘虐冷酷、好色貪杯、一代宗師威儀",
+              speech: "古風典雅、濃濃的古武士長者口吻", weapon: "無上名刀「村正」",
+              body: "178/68", outfitFront: "純黑日式刺繡羽織羽袍", outfitBack: "純黑日式刺繡羽織羽袍",
+              stats: { "力量": 3, "敏捷": 4, "耐力": 2, "武器技術": 5, "格鬥術": 2, "射擊": 1, "智力": 3, "經驗": 5 },
+              background: "率領日本精銳幫眾渡海來到新盤古開疆拓土的傳奇極道大佬。一舉肅清地下黑市建立水龍組，現正與黑錨幫進行不死不休的殘酷地盤爭奪。平時看似行將就木的風流老者，拔刀瞬間能迸發出足以斬裂鋼鐵的極致劍氣。",
+              combat: "世間最神速的拔刀術 (居合)。絕不隨意挪步，只要踏入其刀刃斬擊半徑，寒芒一閃獵物必身首異處。"
+            },
+            {
+              code: "a18", name: "黑田由拉 (Kuroda Yura)", codename: "夜叉 (Yaksha)", age: "26",
+              front: "水龍館執行常務", back: "極道水龍組若頭 (副組長)", appearance: "墨黑日式公主切長髮、璀璨金芒眼眸",
+              mbti: "ENTJ (8w7)", personality: "極度講求實利效率、手段陰冷殘酷",
+              speech: "對手下命令無情殘暴／商務應酬時展現完美無瑕的商務敬語", weapon: "大口徑半自動手槍、日本武士刀",
+              feature: "柳根的唯一親孫女", body: "168/58/C",
+              outfitFront: "米色合身長風衣、黑色高領針織衫、修身長褲", outfitBack: "微露香肩的半褪和服羽織、黑色劍道袴褲",
+              stats: { "力量": 2, "敏捷": 3, "耐力": 3, "武器技術": 4, "格鬥術": 2, "射擊": 3, "智力": 4, "經驗": 3 },
+              background: "柳根唯一的血脈後代。雙親在早期黑幫火拼中喪命後，自幼被柳根當成最鋒利的殺人兵器撫養長大。一手包辦組織龐大的資金運作與國際走私物流網，開戰時親赴前線坐鎮指揮。野心勃勃等待祖父嚥氣退位，徹底稱霸整個港口郡。",
+              combat: "全無破綻的刀槍一體連動。將祖父傳授的古流劍術與高超現代速射結合，中近距離皆可無死角絞殺。"
+            }
+          ]
+        },
+        rebellion: {
+          title: "叛亂 (Rebellion)",
+          desc: "由踐踏假面舞會規則的亡命殺手組成的反政府武裝恐攻組織。不設階級森嚴的常規軍隊體制，以鬆散的特工小隊網狀分佈，成員各自憑藉強大力量在全島展開破壞。",
+          characters: [
+            {
+              code: "a19", name: "瑟拉菲娜·羅斯 (Seraphina Ross)", codename: "六翼天使 (Seraphim)", age: "32",
+              front: "無", back: "叛亂最高領袖", appearance: "黑白相間飄逸雙色長髮、陰沉灰燼眼瞳",
+              mbti: "INTJ (8w7)", personality: "狂妄自傲、信奉弱肉強食叢林法則、極端仇視體制規則",
+              speech: "優雅低沉、字字充滿蔑視常理的居高臨下平語", weapon: "強大念動力 (Telekinesis)",
+              feature: "都市第一號最凶惡特級獵殺目標", body: "176/58/C",
+              outfitFront: "毛皮領黑色大衣、黑色針織衫、黑色緊身皮褲", outfitBack: "毛皮領黑色大衣、黑色針織衫、黑色緊身皮褲",
+              stats: { "力量": 5, "敏捷": 4, "耐力": 4, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 3, "經驗": 3 },
+              background: "天生覺醒念動力的自然異能者。昔日念動力輸出受限於肉體力量，在聯盟中僅屬高階殺手。為追求神明般的力量，單槍匹馬襲擊蝶蛹總部奪走未完成的強化血清，融合後肉體與念力雙雙突破人類極限。創立叛亂誓言徹底粉碎假面舞會與 CCC 的專制王國。",
+              combat: "排山倒海的絕對念力衝擊。無需接觸，僅憑視線與意識便能將主戰坦克揉成廢鐵並活生生將敵人碾成血霧。"
+            },
+            {
+              code: "a20", name: "羅克茜·貝克斯 (Roxy Bex)", codename: "粉碎機 (Shredder)", age: "22",
+              front: "無", back: "叛亂突擊主力", appearance: "俏皮紅色翹短髮紮成小揪揪、狂暴血紅雙眸",
+              mbti: "ESTP (7w8)", personality: "重度破壞狂、惡童性格、毫無煞車的野獸",
+              speech: "滿嘴黑市俚語、狂妄吵鬧的平語", weapon: "改裝重型工業電鋸",
+              body: "152/56/D", outfitFront: "金屬環比基尼上衣、工裝牛仔吊帶褲", outfitBack: "金屬環比基尼上衣、工裝牛仔吊帶褲",
+              stats: { "力量": 4, "敏捷": 2, "耐力": 4, "武器技術": 3, "格鬥術": 1, "射擊": 1, "智力": 1, "經驗": 2 },
+              background: "港口外圍廢鐵場長大的底層貧民。生性殘暴無法管教，加入聯盟後因頻繁違規差點遭到處決。在她用電鋸活活肢解前來肅清的幹部亡命天涯時，被六翼天使相中吸收。現為反抗軍製造恐慌混亂的首席破壞狂。",
+              combat: "狂暴電鋸衝鋒。一拉引線便狂笑著無腦向前狂衝，將眼前所有掩體與敵人攔腰鋸斷撕裂。"
+            },
+            {
+              code: "a31", name: "凡妮莎·卡斯爾 (Vanessa Castle)", codename: "滅殺開關 (Kill Switch)", age: "35",
+              front: "無", back: "叛亂首席狙擊手", appearance: "薄荷綠與粉紅雙色大雙馬尾、神秘紫眸",
+              mbti: "ISTJ (1w9)", personality: "冰山冷酷、情緒毫無起伏的狙擊機器",
+              speech: "極度冷漠、毫無情緒起伏的短句", weapon: "客製化重型超長程大口徑反器材狙擊步槍",
+              feature: "虎鯨部隊叛逃王牌隊員、極度熱愛棒棒糖", body: "162/52/B",
+              outfitFront: "迷彩軍帽、橘色戰術飛行夾克、短版運動內衣、運動熱褲", outfitBack: "迷彩軍帽、橘色戰術飛行夾克、短版運動內衣、運動熱褲",
+              stats: { "力量": 5, "敏捷": 3, "耐力": 3, "武器技術": 3, "格鬥術": 2, "射擊": "5+@", "智力": 2, "經驗": 3 },
+              background: "原虎鯨特種部隊首席王牌狙擊手。某次 CCC 最高機密遭平民區意外截獲，高層下令將該民宅區數百人全面屠殺滅口。凡妮莎抗命狙殺現場指揮官後殺出重圍叛逃。為摧毀滿嘴仁義道德的偽善體制加入反抗軍。",
+              combat: "唯有經強化血清改造的肉體才能承受的巨砲級狙擊。一槍之威能輕易貫穿重裝甲車並將掩體後的人體轟成肉屑。",
+              quote: "距離 1,500。風向 3 點鐘。目標已鎖定，準備滅殺。"
+            },
+            {
+              code: "b10", name: "凌蕊 (Ling Rui)", codename: "阿修羅 (Asura)", age: "20",
+              front: "無", back: "叛亂精銳武鬥家", appearance: "白髮短髮、血紅眼眸、常駐人畜無害的可愛笑臉",
+              mbti: "ENTP (7w8)", personality: "純粹的惡意、極端戰鬥狂、腹黑病嬌正太弟弟",
+              speech: "滿滿撒嬌口吻、油滑戲謔、令人背脊發涼", weapon: "殺人武學「滅殺拳」",
+              feature: "凌辰的親弟弟", body: "164/69",
+              outfitFront: "無袖深色改良式中華功夫服", outfitBack: "無袖深色改良式中華功夫服",
+              stats: { "力量": 4, "敏捷": 4, "耐力": 4, "武器技術": 1, "格鬥術": "5+@", "射擊": 1, "智力": 2, "經驗": 4 },
+              background: "與姊姊凌辰在深山武館長大，但深信武術純粹是為了殺戮與破壞而生。成年當天弒師出山來到新盤古。見證六翼天使的恐怖神力後，興奮認定『親手掐死這女人時我的滅殺拳方能大成』而加入反抗軍。同時也渴望親手獵殺日漸成長的笨蛋姊姊。",
+              combat: "即時解析對手破綻並神速複製對手流派的鏡像破壞武學。",
+              quote: "哎呀呀，這不是姊姊嗎？還是那副蠢到不行的呆瓜臉呢。別急著送死嘛～等時機成熟了，我一定會親手送妳下去跟師父那個老頭子團聚的。"
+            }
+          ]
+        },
+        euphoria: {
+          title: "欣快盟約 (Euphoria Covenant)",
+          desc: "盤踞於聯結郡頂級私有莊園「欣快花園」的神秘邪教集團。透過神經精神藥物、深度催眠與極致的情感操控 (Gaslighting) 洗腦信徒，向全島上流名流榨取巨額資金與最高機密。",
+          characters: [
+            {
+              code: "b13", name: "加布里埃爾 (Gabriel)", codename: "無", age: "32",
+              front: "新興宗教「欣快盟約」教主", back: "無", appearance: "燦金微捲長髮、惑人深紅眼眸、神祇般精緻絕美的五官",
+              mbti: "ENFJ (3w4)", personality: "極度欺瞞、偽善狂徒、洗腦大師",
+              speech: "慈愛神聖的牧師敬語、無孔不入的心理 Manipulate", weapon: "無色無味致幻神經毒氣、精神支配",
+              body: "182/75", outfitFront: "純白無瑕的頂級絲綢燕尾神職禮服", outfitBack: "純白無瑕的頂級絲綢燕尾神職禮服",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 5, "經驗": 1 },
+              background: "港口紅燈區長大的暗娼之子，看遍了人間底層慘劇與高官權貴的骯髒慾念。深刻體悟到支配人類靈魂的最強武器並非暴力，而是快感、愧疚感與信仰。創立邪教後以俊美皮囊與天生口才滲透上流階層，將空虛壓力山大的名流牢牢掌控在股掌之中。",
+              combat: "心理精神崩潰術。釋放特製致幻氣體摧毀敵人的心理防線，利用言語誘導敵人崩潰自盡。",
+              quote: "您至今仍背負著如此沉重的世俗枷鎖備受折磨呢... 放下這一切，將您脆弱的靈魂與肉體完整交給我吧。"
+            },
+            {
+              code: "a40", name: "維斯珀·洛克威爾 (Vesper Rockwell)", codename: "隼 (Falcon)", age: "27",
+              front: "加布里埃爾專屬秘書", back: "加布里埃爾貼身保鑣兼死士", appearance: "黑紅雙色俐落一刀切短髮、深邃藍瞳",
+              mbti: "ISTJ (6w5)", personality: "寡言沉穩、受制於洗腦的絕對死忠",
+              speech: "壓抑克制、極致冰冷的公事敬語", weapon: "特製高分子飛刀 (飛刀術)",
+              feature: "身心靈遭到加布里埃爾深度催眠洗腦操控", body: "172/55/C",
+              outfitFront: "黑色合身窄裙套裝、精巧圓框眼鏡", outfitBack: "黑色合身窄裙套裝、精巧圓框眼鏡",
+              stats: { "力量": 2, "敏捷": 4, "耐力": 2, "武器技術": 4, "格鬥術": 3, "射擊": 2, "智力": 3, "經驗": 3 },
+              background: "原是頂尖自由殺手，接獲委託潛入暗殺加布里埃爾，一路殺至臥室卻吸入致幻神經瓦斯，自我意識在殘酷的精神折磨下被徹底粉碎洗腦。如今成為加布里埃爾身邊最完美的秘書兼冷酷行刑犬。",
+              combat: "全身上下隨身攜帶數十柄飛刀，百步穿楊的高速飛刀投擲術。",
+              quote: "教主大人，祝您有芬芳美好的早晨。今日的行程是... 上午 10 點與 CCC 幹部密會，下午 2 點為昨日擒獲的異端進行宣教淨化。"
+            },
+            {
+              code: "a41", name: "克拉拉·沃德 (Clara Ward)", codename: "無", age: "25",
+              front: "聯結郡「太平洋資本」銀行業務部基層行員", back: "無", appearance: "凌亂披肩棕長髮、疲憊焦慮的棕瞳",
+              mbti: "ISFJ (6w5)", personality: "嚴重職業倦怠 (Burnout)、極度自卑膽小怯懦",
+              speech: "缺乏底氣、唯唯諾諾、尾音模糊的敬語", weapon: "無",
+              feature: "剛入社會的新鮮人、正逐步深陷欣快盟約的洗腦泥淖中", body: "164/48/B",
+              outfitFront: "白色標準職業襯衫、黑色窄裙", outfitBack: "白色標準職業襯衫、黑色窄裙",
+              stats: { "力量": 1, "敏捷": 1, "耐力": 1, "武器技術": 1, "格鬥術": 1, "射擊": 1, "智力": 3, "經驗": 1 },
+              background: "盤古大學高材生，畢業後進入人人羨慕的金融巨頭太平洋資本。但在聯結郡極端冷血的業績至上與日日無休的恐怖加班下，半年內精神徹底崩潰。在最絕望時接觸了欣快盟約，正一步步走向萬劫不復的深淵。",
+              combat: "毫無戰鬥能力。",
+              quote: "我真的... 快撐不下去了... 每天走進辦公室都覺得呼吸好困難... 我也很想把工作做好... 為什麼我會這麼沒用呢...？"
+            }
+          ]
+        },
+        yoshiwara: {
+          title: "新吉原 (Neo Yoshiwara)",
+          desc: "需搭乘露米娜郡秘密超大型重載電梯方能抵達的新盤古地底現代極奢風俗街。全區充斥霓虹、純金與大理石，是連 CCC 法律與舞會鐵律都無法觸及的不法聖域，由長生不老的魔王「謙信」君臨支配。",
+          characters: [
+            {
+              code: "b14", name: "上田謙信/源心 (Ueda Kenshin)", codename: "夜王 (Night King)", age: "500+",
+              front: "無", back: "新吉原至高支配者", appearance: "夾雜銀絲的後梳霸氣黑髮、璀璨妖異金瞳、外貌約 50 歲的成熟霸者",
+              mbti: "ENTJ (8w7)", personality: "狂妄傲慢、長生帶來的深沉倦怠、享樂至上",
+              speech: "極具壓迫感的霸王氣場、帝王般的自負平語", weapon: "超凡神級肉體機能、古流無雙武術",
+              feature: "長生不老的超越者", body: "192/100",
+              outfitFront: "露出壯碩胸肌線條的純黑奢華刺繡和服", outfitBack: "露出壯碩胸肌線條的純黑奢華刺繡和服",
+              stats: { "力量": "5+@", "敏捷": "5+@", "耐力": "5+@", "武器技術": "5+@", "格鬥術": "5+@", "射擊": "5+@", "智力": "5+@", "經驗": "5+@" },
+              background: "活了超過五百年、連自己原名都已淡忘的長生不老超能力者。旁觀了數百個文明王朝興衰，在新盤古建城時買下地底龐大空洞建造極奢『新吉原』。高居地下天守閣歡樂宮頂端，冷眼俯視著整座罪惡之城。",
+              combat: "超越人類規格極限的神域力量。單憑純粹肉體爆發力與武藝即可徒手碾壓任何現代殺手。致命弱點：一旦暴露於真實太陽光紫外線下，超能力將瞬間失效，凍結的五百年時光將在數秒內加速流逝使其肉體灰飛煙滅。"
+            },
+            {
+              code: "a45", name: "真條茜 (Shinjo Akane)", codename: "紅蓮 (Crimson)", age: "28",
+              front: "無", back: "謙信專屬侍寢女忍 (Kunoichi)", appearance: "烏黑如瀑長髮僅在髮尾微束、妖媚醉人赤紅眼眸",
+              mbti: "ESFP (7w8)", personality: "妖艷嫵媚、色氣滿溢、病態依戀",
+              speech: "酥麻入骨的慵懶輕柔敬語", weapon: "淬毒苦無、忍術暗器",
+              feature: "對謙信懷抱病態絕對崇拜", body: "168/55/D",
+              outfitFront: "紅白配色高衩性感新式改良和服", outfitBack: "紅白配色高衩性感新式改良和服",
+              stats: { "力量": 2, "敏捷": 5, "耐力": 3, "武器技術": 4, "格鬥術": 4, "射擊": 1, "智力": 1, "經驗": 4 },
+              background: "兩年前受殺手聯盟重金委託潛入地底刺殺上田謙信/源心，然而在謙信/源心那神明般壓倒性的武力與雄性氣魄面前一敗塗地，身心靈徹底被其征服俘虜，自願化身為謙信/源心身旁最得寵的首席舞姬與致命貼身女忍。",
+              combat: "結合火焰與分身走位的華麗忍術突襲。以苦無為引，在火光掩護下以肉眼無法捕捉的速度撕開敵人動脈。",
+              quote: "...哎呀，主人高貴的庭院裡，怎麼溜進了這麼多髒兮兮的臭老鼠呢。膽敢打擾主人雅興的雜蟲... 就由我紅蓮，把你們漂亮地燒成灰燼吧。"
+            }
+          ]
+        }
+      };
+
+      function characterImage(code, type) {
+        return `./네오 판게아 _ 마스커레이드_files/0${code === 'a1' && type === 'a' ? '' : code === 'a1' && type === 'b' ? '(1)' : ''}.webp`;
+      }
+
+      function getRemoteFallback(code, type) {
+        return `https://onse.uk/04TMQ/${code}/${type}/0.webp`;
+      }
+
+      function renderFaction(factionId) {
+        const faction = factionDatabase[factionId];
+        if (!faction) return;
+
+        document.getElementById("factionTitle").innerText = faction.title;
+        document.getElementById("factionDesc").innerText = faction.desc;
+
+        const list = document.getElementById("characterList");
+        list.innerHTML = "";
+
+        if (!faction.characters || faction.characters.length === 0) {
+          list.innerHTML = `<div class="empty-faction">此勢力目前暫無登錄之關鍵人員名冊。</div>`;
+          return;
+        }
+
+        faction.characters.forEach(char => {
+          const stats = Object.entries(char.stats)
+            .map(([key, value]) => `<span class="stat-chip">${key} ${value}</span>`)
+            .join("");
+
+          const identity = [
+            char.front && char.front !== "-" ? char.front : "",
+            char.back && char.back !== "-" ? char.back : ""
+          ].filter(Boolean).join(" / ") || "無所屬";
+
+          const quoteHTML = char.quote ? `<div class="profile-quote">“${char.quote}”</div>` : '';
+
+          const html = `
+            <article class="profile-card">
+              <div class="profile-gallery">
+                <img src="${getRemoteFallback(char.code, "a")}" data-fullsrc="${getRemoteFallback(char.code, "a")}" data-caption="${char.name} - 表面身分肖像" alt="${char.name} 表面身分" loading="lazy">
+                <img src="${getRemoteFallback(char.code, "b")}" data-fullsrc="${getRemoteFallback(char.code, "b")}" data-caption="${char.name} - 裡身分／戰鬥姿態" alt="${char.name} 裡身分" loading="lazy">
+              </div>
+              <div class="profile-info">
+                <h3>${char.name} <span class="codename">代號: ${char.codename}</span></h3>
+                <div class="profile-meta">${identity} · ${char.age}歲 · ${char.mbti}</div>
+                <div class="profile-grid">
+                  <div class="profile-row"><b>體態</b><span>${char.body}</span></div>
+                  <div class="profile-row"><b>性格</b><span>${char.personality}</span></div>
+                  <div class="profile-row"><b>言談</b><span>${char.speech}</span></div>
+                  <div class="profile-row"><b>專屬武器</b><span>${char.weapon}</span></div>
+                </div>
+                <div class="stat-chip-row">${stats}</div>
+                <div class="profile-block">
+                  <h4>人物背景</h4>
+                  <p>${char.background}</p>
+                </div>
+                <div class="profile-block">
+                  <h4>戰鬥風格與特長</h4>
+                  <p>${char.combat}</p>
+                </div>
+                ${quoteHTML}
+              </div>
+            </article>
+          `;
+          list.insertAdjacentHTML("beforeend", html);
+        });
+      }
+
+      const factionButtons = document.querySelectorAll(".faction-btn");
+      factionButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          factionButtons.forEach(btn => btn.classList.toggle("active", btn === button));
+          renderFaction(button.dataset.faction);
+        });
+      });
+
+      // 預設渲染無所屬
+      renderFaction("independent");
+
+      // 5. 圖片燈箱大圖檢視
+      const imageLightbox = document.getElementById("imageLightbox");
+      const lightboxImage = document.getElementById("lightboxImage");
+      const lightboxCaption = document.getElementById("lightboxCaption");
+      const closeLightbox = document.getElementById("closeLightbox");
+
+      function openImageLightbox(img) {
+        const src = img.dataset.fullsrc || img.src;
+        lightboxImage.src = src;
+        lightboxImage.alt = img.alt || "放大檢視";
+        lightboxCaption.innerText = img.dataset.caption || img.alt || "";
+        imageLightbox.classList.add("active");
+        imageLightbox.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeImageLightbox() {
+        imageLightbox.classList.remove("active");
+        imageLightbox.setAttribute("aria-hidden", "true");
+        lightboxImage.src = "";
+        document.body.style.overflow = "";
+      }
+
+      document.getElementById("characterList").addEventListener("click", e => {
+        const img = e.target.closest(".profile-gallery img");
+        if (!img) return;
+        openImageLightbox(img);
+      });
+
+      closeLightbox.addEventListener("click", closeImageLightbox);
+      imageLightbox.addEventListener("click", e => {
+        if (e.target === imageLightbox) closeImageLightbox();
+      });
+      document.addEventListener("keydown", e => {
+        if (e.key === "Escape" && imageLightbox.classList.contains("active")) {
+          closeImageLightbox();
+        }
+      });
+
+      // 關閉行政區彈窗
+      closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+      modal.addEventListener("click", e => {
+        if(e.target === modal) modal.classList.remove("active");
+      });
+
+    })();
+  </script>
+</body>
+</html>
